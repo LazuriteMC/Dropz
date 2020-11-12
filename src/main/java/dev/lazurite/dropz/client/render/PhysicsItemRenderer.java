@@ -1,5 +1,6 @@
 package dev.lazurite.dropz.client.render;
 
+import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.dropz.server.ServerInitializer;
 import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
 import net.fabricmc.api.EnvType;
@@ -29,8 +30,10 @@ public class PhysicsItemRenderer extends EntityRenderer<PhysicsItemEntity> {
 
         matrixStack.push();
         ItemStack itemStack = entity.getStack();
-
         BakedModel bakedModel = client.itemRenderer.getHeldItemModel(itemStack, entity.world, (LivingEntity)null);
+
+        matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(entity.getPhysics().getOrientation()));
+
         client.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
     }
