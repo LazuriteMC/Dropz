@@ -1,6 +1,7 @@
 package dev.lazurite.dropz.mixin;
 
-import dev.lazurite.dropz.entity.PhysicsItemEntity;
+import dev.lazurite.dropz.server.ServerInitializer;
+import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -39,8 +40,8 @@ public class ClientPlayNetworkHandlerMixin {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void onEntitySpawn(EntitySpawnS2CPacket packet, CallbackInfo info, double x, double y, double z, EntityType<?> type) {
-        if (type == EntityType.ITEM) {
-            PhysicsItemEntity entity = new PhysicsItemEntity(world);
+        if (type == ServerInitializer.PHYSICS_ITEM_ENTITY) {
+            PhysicsItemEntity entity = new PhysicsItemEntity(type, world);
 
             int i = packet.getId();
             entity.updatePositionAndAngles(new Vector3f(

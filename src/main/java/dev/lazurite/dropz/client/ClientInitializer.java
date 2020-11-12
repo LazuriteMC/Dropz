@@ -1,19 +1,15 @@
-package dev.lazurite.dropz;
+package dev.lazurite.dropz.client;
 
+import dev.lazurite.dropz.client.render.PhysicsItemRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
 public class ClientInitializer implements ClientModInitializer {
-    public static final String MODID = "dropz";
-
-    /** The running instance of the minecraft client. */
-    public static final MinecraftClient client = MinecraftClient.getInstance();
 
     @Override
     public void onInitializeClient() {
-
+        PhysicsItemRenderer.register();
     }
 }

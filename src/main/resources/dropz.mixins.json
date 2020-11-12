@@ -4,6 +4,7 @@
   "package": "dev.lazurite.dropz.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ItemEntityMixin",
     "ServerWorldMixin"
   ],
   "client": [
