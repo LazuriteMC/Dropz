@@ -23,10 +23,6 @@ dependencies {
 	implementation files('libs/physics.jar')
 }
 
-minecraft {
-	accessWidener "src/main/resources/dropz.accesswidener"
-}
-
 processResources {
 	inputs.property "version", project.version
 

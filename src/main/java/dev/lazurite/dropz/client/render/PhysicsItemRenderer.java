@@ -30,11 +30,12 @@ public class PhysicsItemRenderer extends EntityRenderer<PhysicsItemEntity> {
 
         matrixStack.push();
         ItemStack itemStack = entity.getStack();
-        BakedModel bakedModel = client.itemRenderer.getHeldItemModel(itemStack, entity.world, (LivingEntity)null);
+        BakedModel bakedModel = client.getItemRenderer().getHeldItemModel(itemStack, entity.world, (LivingEntity)null);
+//        matrixStack.translate(0.25f, -0.25f, 0.25f);
+//        matrixStack.scale(3, 3, 3);
 
         matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(entity.getPhysics().getOrientation()));
-
-        client.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+        client.getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
     }
 

@@ -16,7 +16,6 @@
 
   "license": "CC0-1.0",
   "icon": "assets/dropz/icon.png",
-  "accessWidener": "dropz.accesswidener",
 
   "environment": "*",
   "entrypoints": {

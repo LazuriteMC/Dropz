@@ -25,7 +25,7 @@ public class ServerInitializer implements ModInitializer {
 		PHYSICS_ITEM_ENTITY = Registry.register(
 				Registry.ENTITY_TYPE,
 				new Identifier(MODID, "physics_item_entity"),
-				FabricEntityTypeBuilder.create(SpawnGroup.MISC, PhysicsItemEntity::new).dimensions(EntityDimensions.fixed(0.5F, 0.125F)).trackable(80, 3, true).build()
+				FabricEntityTypeBuilder.create(SpawnGroup.MISC, PhysicsItemEntity::new).dimensions(EntityDimensions.fixed(0.5F, 0.5F)).trackable(80, 3, true).build()
 		);
 	}
 }
