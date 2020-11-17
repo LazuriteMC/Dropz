@@ -3,7 +3,6 @@ package dev.lazurite.dropz.client.render;
 import dev.lazurite.api.physics.client.PhysicsWorld;
 import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.util.math.QuaternionHelper;
-import dev.lazurite.dropz.client.ClientInitializer;
 import dev.lazurite.dropz.server.ServerInitializer;
 import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
 import net.fabricmc.api.EnvType;
@@ -19,7 +18,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import shadow.com.bulletphysics.dynamics.RigidBody;
 import shadow.com.bulletphysics.linearmath.Transform;
 import shadow.javax.vecmath.Vector3f;
 
@@ -30,23 +28,24 @@ public class PhysicsItemRenderer extends EntityRenderer<PhysicsItemEntity> {
     }
 
     @Override
-    public void render(PhysicsItemEntity entity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(PhysicsItemEntity entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientPhysicsHandler physics = (ClientPhysicsHandler) entity.getPhysics();
 
-//        PhysicsWorld world = PhysicsWorld.getInstance();
-//        world.getDynamicsWorld().setDebugDrawer(ClientInitializer.debugRenderer);
-//        RigidBody body = physics.getRigidBody();
-//        world.getDynamicsWorld().debugDrawWorld();
-//        world.getDynamicsWorld().debugDrawObject(body.getWorldTransform(new Transform()), body.getCollisionShape(), new Vector3f(1.0f, 0, 1.0f));
+        PhysicsWorld.getInstance().getDynamicsWorld().setDebugDrawer(new PhysicsDebugRenderer());
+        PhysicsWorld.getInstance().getDynamicsWorld().debugDrawObject(
+                physics.getRigidBody().getWorldTransform(new Transform()),
+                physics.getRigidBody().getCollisionShape(),
+                new Vector3f(1, 1, 1));
 
         matrixStack.push();
-
         ItemStack itemStack = entity.getStack();
         BakedModel bakedModel = client.getItemRenderer().getHeldItemModel(itemStack, entity.world, null);
+//        matrixStack.translate(0.25f, -0.25f, 0.25f);
+//        matrixStack.scale(3, 3, 3);
+
         matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(entity.getPhysics().getOrientation()));
         client.getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
-
         matrixStack.pop();
     }
 

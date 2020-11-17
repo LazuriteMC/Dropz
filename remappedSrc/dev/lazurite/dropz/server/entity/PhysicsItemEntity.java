@@ -45,10 +45,10 @@ public class PhysicsItemEntity extends PhysicsEntity {
         this.setValue(MASS, 1.0f);
         this.setValue(DRAG_COEFFICIENT, 0.005f);
 
-//        if (world.isClient()) {
-//            ShapeHelper.shape = buildShape(stack);
-//            ((ClientPhysicsHandler) physics).createRigidBody();
-//        }
+        if (world.isClient()) {
+            ShapeHelper.shape = buildShape(stack);
+            ((ClientPhysicsHandler) physics).createRigidBody();
+        }
     }
 
     public ConvexHullShape createHull(BakedQuad quad) {
@@ -98,7 +98,7 @@ public class PhysicsItemEntity extends PhysicsEntity {
             }
         } else {
             Quat4f orientation = physics.getOrientation();
-//            QuaternionHelper.rotateX(orientation, 2.0f);
+            QuaternionHelper.rotateY(orientation, 0.5f);
             physics.setOrientation(orientation);
         }
     }
