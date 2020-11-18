@@ -8,10 +8,7 @@
     "ServerWorldMixin"
   ],
   "client": [
-    "ClientPlayNetworkHandlerMixin",
-    "DebugRendererMixin",
-    "GameRendererMixin",
-    "WorldRendererMixin"
+    "ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

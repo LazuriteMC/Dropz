@@ -34,6 +34,8 @@ import java.util.Random;
 public class PhysicsItemEntity extends PhysicsEntity {
     public static final EntityTrackerRegistry.Entry<ItemStack> ITEM_STACK = EntityTrackerRegistry.register("item_stack", ServerInitializer.ITEM_STACK_TYPE, new ItemStack(Items.AIR), PhysicsItemEntity.class);
 
+    private boolean isStackSetOnClient = false;
+
     public PhysicsItemEntity(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -45,10 +47,7 @@ public class PhysicsItemEntity extends PhysicsEntity {
         this.setValue(MASS, 1.0f);
         this.setValue(DRAG_COEFFICIENT, 0.005f);
 
-//        if (world.isClient()) {
-//            ShapeHelper.shape = buildShape(stack);
-//            ((ClientPhysicsHandler) physics).createRigidBody();
-//        }
+
     }
 
     public ConvexHullShape createHull(BakedQuad quad) {
@@ -100,6 +99,13 @@ public class PhysicsItemEntity extends PhysicsEntity {
             Quat4f orientation = physics.getOrientation();
 //            QuaternionHelper.rotateX(orientation, 2.0f);
             physics.setOrientation(orientation);
+
+            if (!isStackSetOnClient && !getStack().getItem().equals(Items.AIR)) {
+//                ShapeHelper.shape = buildShape(getStack());
+//                System.out.println(ShapeHelper.shape);
+//                ((ClientPhysicsHandler) physics).createRigidBody();
+//                isStackSetOnClient = true;
+            }
         }
     }
 
