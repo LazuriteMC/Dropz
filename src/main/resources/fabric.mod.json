@@ -6,8 +6,7 @@
   "name": "Dropz",
   "description": "",
   "authors": [
-    "BlueVista",
-    "InnateBit"
+    "BlueVista"
   ],
   "contact": {
     "homepage": "",
@@ -16,6 +15,7 @@
 
   "license": "CC0-1.0",
   "icon": "assets/dropz/icon.png",
+  "accessWidener": "dropz.accesswidener",
 
   "environment": "*",
   "entrypoints": {

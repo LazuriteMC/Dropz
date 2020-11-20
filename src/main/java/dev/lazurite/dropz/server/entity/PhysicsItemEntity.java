@@ -4,31 +4,31 @@ import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.client.helper.ShapeHelper;
 import dev.lazurite.api.physics.network.tracker.EntityTrackerRegistry;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
-import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.dropz.server.ServerInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.render.model.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import shadow.com.bulletphysics.collision.shapes.CompoundShape;
-import shadow.com.bulletphysics.collision.shapes.ConvexHullShape;
-import shadow.com.bulletphysics.linearmath.Transform;
+import org.apache.commons.lang3.tuple.Pair;
+import shadow.com.bulletphysics.collision.shapes.*;
 import shadow.com.bulletphysics.util.ObjectArrayList;
 import shadow.javax.vecmath.Quat4f;
 import shadow.javax.vecmath.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.function.Predicate;
 
 @Environment(EnvType.CLIENT)
 public class PhysicsItemEntity extends PhysicsEntity {
@@ -46,41 +46,73 @@ public class PhysicsItemEntity extends PhysicsEntity {
         this.setValue(SIZE, 8);
         this.setValue(MASS, 1.0f);
         this.setValue(DRAG_COEFFICIENT, 0.005f);
-
-
     }
 
-    public ConvexHullShape createHull(BakedQuad quad) {
+    public CollisionShape getItemShape(ItemStack stack) {
+        BakedModel model = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(getStack());
+        Vector3f extents = new Vector3f(16, 16, 1);
+        extents.scale(0.03125f);
+        return new BoxShape(extents);
+    }
+
+    public CollisionShape getBlockShape(BlockState state) {
+        BakedModel model = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModel(state);
+        ObjectArrayList<Vector3f> points = new ObjectArrayList<>();
+
+        if (model instanceof MultipartBakedModel) {
+            MultipartBakedModel multi = (MultipartBakedModel) model;
+
+            for (Pair<Predicate<BlockState>, BakedModel> component : multi.components) {
+                BakedModel baked = component.getRight();
+
+                if (baked instanceof BasicBakedModel) {
+                    BasicBakedModel basic = (BasicBakedModel) baked;
+
+                    for (Direction d : Direction.values()) {
+                        points.addAll(getPoints(basic.faceQuads.get(d)));
+                        System.out.println(points);
+                    }
+                }
+            }
+        }
+
+        ObjectArrayList<Vector3f> buffer = new ObjectArrayList<>();
+        for (int i = 0; i < points.size(); i+=4) {
+            buffer.add(points.get(i));
+            buffer.add(points.get(i+1));
+            buffer.add(points.get(i+2));
+            buffer.add(points.get(i+3));
+            buffer.add(points.get(i));
+        }
+
+        return new ConvexHullShape(buffer);
+    }
+
+    public ObjectArrayList<Vector3f> getPoints(BakedQuad quad) {
         ObjectArrayList<Vector3f> points = new ObjectArrayList<>();
         int[] v = quad.getVertexData();
 
-        for (int i = 0; i < v.length; i += 8) {
-            points.add(new Vector3f(
+        for (int i = 0; i < v.length; i += 8) { // loop 4 times through 32 byte queue
+            Vector3f point = new Vector3f(
                     Float.intBitsToFloat(v[i]),
                     Float.intBitsToFloat(v[i+1]),
                     Float.intBitsToFloat(v[i+2])
-            ));
+            );
+
+            points.add(point);
         }
 
-        return new ConvexHullShape(points);
+        return points;
     }
 
-    public CompoundShape buildShape(ItemStack stack) {
-        BakedModel model = MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(stack, world, null);
-        Transform transform = new Transform();
-        List<BakedQuad> quads = new ArrayList<BakedQuad>() {{
-            addAll(model.getQuads(null, Direction.DOWN, new Random()));
-            addAll(model.getQuads(null, Direction.UP, new Random()));
-            addAll(model.getQuads(null, Direction.NORTH, new Random()));
-            addAll(model.getQuads(null, Direction.SOUTH, new Random()));
-            addAll(model.getQuads(null, Direction.WEST, new Random()));
-            addAll(model.getQuads(null, Direction.EAST, new Random()));
-        }};
+    public ObjectArrayList<Vector3f> getPoints(List<BakedQuad> quads) {
+        ObjectArrayList<Vector3f> points = new ObjectArrayList<>();
 
-        CompoundShape compoundShape = new CompoundShape();
-        for (BakedQuad quad : quads)
-            compoundShape.addChildShape(transform, createHull(quad));
-        return compoundShape;
+        for (BakedQuad quad : quads) {
+            points.addAll(getPoints(quad));
+        }
+
+        return points;
     }
 
     @Override
@@ -97,14 +129,19 @@ public class PhysicsItemEntity extends PhysicsEntity {
             }
         } else {
             Quat4f orientation = physics.getOrientation();
-//            QuaternionHelper.rotateX(orientation, 2.0f);
             physics.setOrientation(orientation);
 
             if (!isStackSetOnClient && !getStack().getItem().equals(Items.AIR)) {
-//                ShapeHelper.shape = buildShape(getStack());
-//                System.out.println(ShapeHelper.shape);
-//                ((ClientPhysicsHandler) physics).createRigidBody();
-//                isStackSetOnClient = true;
+
+                if (getStack().getItem() instanceof BlockItem) {
+                    Block block = Block.getBlockFromItem(getStack().getItem());
+                    ShapeHelper.shape = getBlockShape(block.getDefaultState());
+                } else {
+                    ShapeHelper.shape = getItemShape(getStack());
+                }
+
+                ((ClientPhysicsHandler) physics).createRigidBody();
+                isStackSetOnClient = true;
             }
         }
     }
