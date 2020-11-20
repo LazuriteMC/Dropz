@@ -1,4 +1,4 @@
-package dev.lazurite.dropz.server;
+package dev.lazurite.dropz.util;
 
 import dev.lazurite.api.physics.network.tracker.generic.GenericType;
 import net.minecraft.item.ItemStack;

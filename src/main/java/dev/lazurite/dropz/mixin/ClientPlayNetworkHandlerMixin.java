@@ -1,12 +1,15 @@
 package dev.lazurite.dropz.mixin;
 
+import dev.lazurite.dropz.client.ClientInitializer;
 import dev.lazurite.dropz.server.ServerInitializer;
 import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +24,15 @@ import shadow.javax.vecmath.Vector3f;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
+    @Shadow MinecraftClient client;
     @Shadow ClientWorld world;
+
+    @Inject(method = "onGameJoin", at = @At("HEAD"))
+    public void onGameJoin(GameJoinS2CPacket packet) {
+        if(!ClientInitializer.getVersionChecker().isLatestVersion()) {
+            client.player.sendMessage(new T);
+        }
+    }
 
     /**
      * This mixin is necessary since the game hard codes all of the entity types into
