@@ -24,14 +24,11 @@ import shadow.javax.vecmath.Vector3f;
  */
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {
-    @Shadow MinecraftClient client;
     @Shadow ClientWorld world;
 
-    @Inject(method = "onGameJoin", at = @At("HEAD"))
-    public void onGameJoin(GameJoinS2CPacket packet) {
-        if(!ClientInitializer.getVersionChecker().isLatestVersion()) {
-            client.player.sendMessage(new T);
-        }
+    @Inject(method = "onGameJoin", at = @At("TAIL"))
+    public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
+        ClientInitializer.getVersionChecker().sendPlayerMessage();
     }
 
     /**

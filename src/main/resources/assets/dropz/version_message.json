@@ -1,7 +1,0 @@
-{
-  "text": "version_checker.new_version_message",
-  "clickEvent": {
-    "action": "run_command",
-    "value": "/say Hello!"
-  }
-}
