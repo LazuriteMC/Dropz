@@ -14,7 +14,8 @@ import shadow.javax.vecmath.Vector3f;
 public class ItemEntityMixin {
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/World;DDDLnet/minecraft/item/ItemStack;)V")
     public void init(World world, double x, double y, double z, ItemStack stack, CallbackInfo info) {
-        PhysicsItemEntity entity = new PhysicsItemEntity(world, stack);
+        ItemEntity thisEntity = (ItemEntity) (Object) this;
+        PhysicsItemEntity entity = new PhysicsItemEntity(world, stack, thisEntity.getEntityId());
         entity.updatePositionAndAngles(new Vector3f((float) x, (float) y, (float) z), 0, 0);
         world.spawnEntity(entity);
     }

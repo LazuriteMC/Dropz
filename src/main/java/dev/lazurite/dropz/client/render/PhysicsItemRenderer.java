@@ -26,12 +26,12 @@ public class PhysicsItemRenderer extends EntityRenderer<PhysicsItemEntity> {
     @Override
     public void render(PhysicsItemEntity entity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         MinecraftClient client = MinecraftClient.getInstance();
-
-        matrixStack.push();
         ItemStack itemStack = entity.getStack();
         BakedModel bakedModel = client.getItemRenderer().getHeldItemModel(itemStack, entity.world, null);
+
+        matrixStack.push();
         matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(entity.getPhysics().getOrientation()));
-//        matrixStack.translate(0.125f, -0.125f, 0.125f);
+        matrixStack.translate(0, -0.1875, 0); // 3/16
         client.getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
     }
