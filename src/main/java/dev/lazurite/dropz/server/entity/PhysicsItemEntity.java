@@ -20,10 +20,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import shadow.com.bulletphysics.collision.shapes.*;
 import shadow.javax.vecmath.Quat4f;
 import shadow.javax.vecmath.Vector3f;
+
+import java.util.Random;
 
 @Environment(EnvType.CLIENT)
 public class PhysicsItemEntity extends PhysicsEntity {
@@ -46,9 +49,11 @@ public class PhysicsItemEntity extends PhysicsEntity {
     }
 
     public CollisionShape getItemShape(ItemStack stack) {
-        Vector3f extents = new Vector3f(8, 8, 1);
-//        extents.scale(0.1875f);
-        return new BoxShape(extents);
+//        BakedModel model = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(getStack());
+        Vector3f extents = new Vector3f(0.25f, 0.25f, 1.0f / 24.0f);
+        BoxShape box = new BoxShape(extents);
+        box.setMargin(0.04f);
+        return box;
     }
 
     @Override
@@ -68,15 +73,14 @@ public class PhysicsItemEntity extends PhysicsEntity {
             physics.setOrientation(orientation);
 
             if (!isStackSetOnClient && !getStack().getItem().equals(Items.AIR)) {
-//                if (getStack().getItem() instanceof BlockItem) {
-//                    Block block = Block.getBlockFromItem(getStack().getItem());
-//                    BlockState state = block.getDefaultState();
-//                    BakedModel model = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModel(state);
-        BakedModel model = MinecraftClient.getInstance().getItemRenderer().getModels().getModel(getStack());
+                if (getStack().getItem().getClass() == BlockItem.class) {
+                    Block block = Block.getBlockFromItem(getStack().getItem());
+                    BlockState state = block.getDefaultState();
+                    BakedModel model = MinecraftClient.getInstance().getBlockRenderManager().getModels().getModel(state);
                     ShapeHelper.shape = new BakedModelShape(model, null);
-//                } else {
-//                    ShapeHelper.shape = getItemShape(getStack());
-//                }
+                } else {
+                    ShapeHelper.shape = getItemShape(getStack());
+                }
 
                 ((ClientPhysicsHandler) physics).createRigidBody();
                 isStackSetOnClient = true;
