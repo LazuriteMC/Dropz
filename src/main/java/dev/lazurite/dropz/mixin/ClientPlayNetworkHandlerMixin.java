@@ -3,7 +3,6 @@ package dev.lazurite.dropz.mixin;
 import dev.lazurite.dropz.client.ClientInitializer;
 import dev.lazurite.dropz.server.ServerInitializer;
 import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -26,6 +25,13 @@ import shadow.javax.vecmath.Vector3f;
 public class ClientPlayNetworkHandlerMixin {
     @Shadow ClientWorld world;
 
+    /**
+     * This mixin executes whenever the player joins the game. In this case,
+     * it runs the version checker and sends a message to the player if there
+     * is an update for the mod.
+     * @param packet the game join packet
+     * @param info required by every mixin injection
+     */
     @Inject(method = "onGameJoin", at = @At("TAIL"))
     public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
         ClientInitializer.getVersionChecker().sendPlayerMessage();
