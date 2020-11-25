@@ -4,8 +4,8 @@ import dev.lazurite.api.physics.client.handler.ClientPhysicsHandler;
 import dev.lazurite.api.physics.client.helper.ShapeHelper;
 import dev.lazurite.api.physics.network.tracker.EntityTrackerRegistry;
 import dev.lazurite.api.physics.server.entity.PhysicsEntity;
-import dev.lazurite.dropz.client.ShapHelper;
 import dev.lazurite.dropz.server.ServerInitializer;
+import dev.lazurite.dropz.util.ItemShapeHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
@@ -54,9 +54,9 @@ public class PhysicsItemEntity extends PhysicsEntity {
 
             if (!isStackSetOnClient && !getStack().getItem().equals(Items.AIR)) {
                 if (getStack().getItem().getClass() == BlockItem.class) {
-                    ShapeHelper.shape = ShapHelper.getBlockShape(getStack());
+                    ((ClientPhysicsHandler) getPhysics()).setCollisionShape(ItemShapeHelper.getBlockShape(getStack()));
                 } else {
-                    ShapeHelper.shape = ShapHelper.getItemShape(getStack());
+                    ((ClientPhysicsHandler) getPhysics()).setCollisionShape(ItemShapeHelper.getItemShape(getStack()));
                 }
 
                 ((ClientPhysicsHandler) physics).createRigidBody();
