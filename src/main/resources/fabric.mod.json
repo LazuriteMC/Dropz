@@ -6,16 +6,15 @@
   "name": "Dropz",
   "description": "",
   "authors": [
-    "BlueVista"
+    "Lazurite Team"
   ],
   "contact": {
     "homepage": "",
     "sources": "https://github.com/lazuritemc/dropz"
   },
 
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/dropz/icon.png",
-  "accessWidener": "dropz.accesswidener",
 
   "environment": "*",
   "entrypoints": {

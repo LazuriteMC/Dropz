@@ -32,6 +32,7 @@ public class PhysicsItemRenderer extends EntityRenderer<PhysicsItemEntity> {
         matrixStack.push();
         matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(entity.getPhysics().getOrientation()));
         matrixStack.translate(0, -0.1875, 0); // 3/16
+        matrixStack.scale(1.2f, 1.2f, 1.2f);
         client.getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
     }

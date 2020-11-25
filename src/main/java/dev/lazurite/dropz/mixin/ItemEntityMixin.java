@@ -1,6 +1,7 @@
 package dev.lazurite.dropz.mixin;
 
 import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
+import dev.lazurite.dropz.util.ItemEntityTracker;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -15,7 +16,8 @@ public class ItemEntityMixin {
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/World;DDDLnet/minecraft/item/ItemStack;)V")
     public void init(World world, double x, double y, double z, ItemStack stack, CallbackInfo info) {
         ItemEntity thisEntity = (ItemEntity) (Object) this;
-        PhysicsItemEntity entity = new PhysicsItemEntity(world, stack, thisEntity.getEntityId());
+        PhysicsItemEntity entity = new PhysicsItemEntity(world, stack);
+        ItemEntityTracker.add(entity, thisEntity);
         entity.updatePositionAndAngles(new Vector3f((float) x, (float) y, (float) z), 0, 0);
         world.spawnEntity(entity);
     }

@@ -1,8 +1,10 @@
 package dev.lazurite.dropz.server;
 
 import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
+import dev.lazurite.dropz.util.ItemEntityTracker;
 import dev.lazurite.dropz.util.ItemStackType;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -22,6 +24,7 @@ public class ServerInitializer implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ServerTickEvents.START_WORLD_TICK.register(ItemEntityTracker::tick);
 		TrackedDataHandlerRegistry.register(ITEM_STACK_TYPE);
 
 		PHYSICS_ITEM_ENTITY = Registry.register(
