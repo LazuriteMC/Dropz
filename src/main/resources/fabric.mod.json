@@ -17,8 +17,7 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [ "dev.lazurite.dropz.server.ServerInitializer" ],
-    "client": [ "dev.lazurite.dropz.client.ClientInitializer" ]
+    "main": [ "dev.lazurite.dropz.Dropz" ]
   },
 
   "mixins": [ "dropz.mixins.json" ],
@@ -28,6 +27,7 @@
     "fabric": "*",
     "minecraft": "1.16.x"
   },
+
   "suggests": {
     "flamingo": "*"
   }
