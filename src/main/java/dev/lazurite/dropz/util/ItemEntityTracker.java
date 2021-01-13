@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.util;
 
-import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
+import dev.lazurite.dropz.server.entity.PhysicsDropEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.server.world.ServerWorld;
 
@@ -28,15 +28,15 @@ public class ItemEntityTracker {
         return entries.size();
     }
 
-    public static void add(PhysicsItemEntity physicsItemEntity, ItemEntity itemEntity, int ttl) {
+    public static void add(PhysicsDropEntity physicsItemEntity, ItemEntity itemEntity, int ttl) {
         entries.add(new Entry(physicsItemEntity, itemEntity, ttl));
     }
 
-    public static void add(PhysicsItemEntity physicsItemEntity, ItemEntity itemEntity) {
+    public static void add(PhysicsDropEntity physicsItemEntity, ItemEntity itemEntity) {
         add(physicsItemEntity, itemEntity, 64);
     }
 
-    public static PhysicsItemEntity get(ItemEntity itemEntity) {
+    public static PhysicsDropEntity get(ItemEntity itemEntity) {
         for (Entry entry : entries) {
             if (entry.getItemEntity().equals(itemEntity)) {
                 return entry.getPhysicsItemEntity();
@@ -46,7 +46,7 @@ public class ItemEntityTracker {
         return null;
     }
 
-    public static PhysicsItemEntity get(int id) {
+    public static PhysicsDropEntity get(int id) {
         for (Entry entry : entries) {
             if (entry.getItemEntity().getEntityId() == id) {
                 return entry.getPhysicsItemEntity();
@@ -57,18 +57,18 @@ public class ItemEntityTracker {
     }
 
     public static class Entry {
-        private final PhysicsItemEntity physicsItemEntity;
+        private final PhysicsDropEntity physicsItemEntity;
         private final ItemEntity itemEntity;
         private final int ttl;
         private int age;
 
-        public Entry(PhysicsItemEntity physicsItemEntity, ItemEntity itemEntity, int ttl) {
+        public Entry(PhysicsDropEntity physicsItemEntity, ItemEntity itemEntity, int ttl) {
             this.physicsItemEntity = physicsItemEntity;
             this.itemEntity = itemEntity;
             this.ttl = ttl;
         }
 
-        public PhysicsItemEntity getPhysicsItemEntity() {
+        public PhysicsDropEntity getPhysicsItemEntity() {
             return this.physicsItemEntity;
         }
 

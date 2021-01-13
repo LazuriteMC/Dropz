@@ -4,12 +4,11 @@
   "package": "dev.lazurite.dropz.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "EntityMixin",
-    "ItemEntityMixin",
-    "ServerWorldMixin"
+    "common.ItemEntityMixin",
+    "common.ServerWorldMixin"
   ],
   "client": [
-    "ClientPlayNetworkHandlerMixin"
+    "client.ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

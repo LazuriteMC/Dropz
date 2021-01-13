@@ -1,8 +1,7 @@
 package dev.lazurite.dropz.client.render;
 
-import dev.lazurite.api.physics.util.math.QuaternionHelper;
 import dev.lazurite.dropz.server.ServerInitializer;
-import dev.lazurite.dropz.server.entity.PhysicsItemEntity;
+import dev.lazurite.dropz.server.entity.PhysicsDropEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
@@ -18,27 +17,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class PhysicsItemRenderer extends EntityRenderer<PhysicsItemEntity> {
+public class PhysicsItemRenderer extends EntityRenderer<PhysicsDropEntity> {
     public PhysicsItemRenderer(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
     }
 
     @Override
-    public void render(PhysicsItemEntity entity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(PhysicsDropEntity entity, float yaw, float delta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         MinecraftClient client = MinecraftClient.getInstance();
         ItemStack itemStack = entity.getStack();
         BakedModel bakedModel = client.getItemRenderer().getHeldItemModel(itemStack, entity.world, null);
 
         matrixStack.push();
-        matrixStack.peek().getModel().multiply(QuaternionHelper.quat4fToQuaternion(entity.getPhysics().getOrientation()));
-        matrixStack.scale(1.3f, 1.3f, 1.3f);
-        matrixStack.translate(0, -0.1875, 0); // 3/16
+//        matrixStack.scale(1.3f, 1.3f, 1.3f);
+//        matrixStack.translate(0, -0.1875, 0); // 3/16
         client.getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
     }
 
     @Override
-    public Identifier getTexture(PhysicsItemEntity entity) {
+    public Identifier getTexture(PhysicsDropEntity entity) {
         return null;
     }
 

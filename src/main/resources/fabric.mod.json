@@ -4,13 +4,12 @@
   "version": "${version}",
 
   "name": "Dropz",
-  "description": "",
-  "authors": [
-    "Lazurite Team"
-  ],
+  "description": "Dynamic item drops.",
+  "authors": [ "The Lazurite Team" ],
   "contact": {
-    "homepage": "",
-    "sources": "https://github.com/lazuritemc/dropz"
+    "homepage": "https://lazurite.dev",
+    "sources": "https://github.com/lazuritemc/dropz",
+    "issues": "https://github.com/lazuritemc/dropz/issues"
   },
 
   "license": "MIT",
@@ -18,16 +17,11 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "dev.lazurite.dropz.server.ServerInitializer"
-    ],
-    "client": [
-      "dev.lazurite.dropz.client.ClientInitializer"
-    ]
+    "main": [ "dev.lazurite.dropz.server.ServerInitializer" ],
+    "client": [ "dev.lazurite.dropz.client.ClientInitializer" ]
   },
-  "mixins": [
-    "dropz.mixins.json"
-  ],
+
+  "mixins": [ "dropz.mixins.json" ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
