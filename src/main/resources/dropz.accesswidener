@@ -1,0 +1,4 @@
+accessWidener	v1	named
+accessible method net/minecraft/client/render/entity/EntityRenderDispatcher renderShadow (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/entity/Entity;FFLnet/minecraft/world/WorldView;F)V
+accessible field net/minecraft/client/render/entity/EntityRenderer shadowRadius F
+accessible field net/minecraft/client/render/entity/EntityRenderer shadowOpacity F

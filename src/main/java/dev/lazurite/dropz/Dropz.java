@@ -1,7 +1,7 @@
 package dev.lazurite.dropz;
 
-import dev.lazurite.dropz.shape.ItemShapeProvider;
 import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
+import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.*;
 
@@ -10,6 +10,6 @@ public class Dropz implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		DynamicEntityRegistry.INSTANCE.register(ItemEntity.class, ItemShapeProvider::get, 1.0f);
+		DynamicEntityRegistry.INSTANCE.register(ItemEntity.class, BoundingBoxShapeProvider::get, 1.0f);
 	}
 }
