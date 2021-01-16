@@ -38,7 +38,7 @@ public abstract class EntityRenderDispatcherMixin {
                 matrices.push();
                 matrices.translate(x, y + EntityRigidBody.get(entity).getBox().getYLength() / 2.0, z);
                 entityRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
-//                matrices.translate(0, -EntityRigidBody.get(entity).getBox().getYLength() / 2.0, 0);
+                matrices.translate(0, -EntityRigidBody.get(entity).getBox().getYLength() / 2.0, 0);
 
                 if (entity.doesRenderOnFire()) {
                     this.renderFire(matrices, vertexConsumers, entity);

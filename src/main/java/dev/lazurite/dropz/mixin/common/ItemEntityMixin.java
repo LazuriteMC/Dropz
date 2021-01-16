@@ -19,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,6 +28,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import physics.com.bulletphysics.collision.shapes.CollisionShape;
 import physics.javax.vecmath.Vector3f;
+
+import java.util.Objects;
+import java.util.UUID;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess {
@@ -40,6 +44,8 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
     @Unique private boolean isBlock;
 
     @Shadow public abstract ItemStack getStack();
+
+    @Shadow @Nullable public abstract UUID getOwner();
 
     public ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -98,8 +104,18 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
         }
     }
 
-    @Unique
-    @Override
+    @Unique @Override
+    public void merge(ItemEntity itemEntity) {
+        if (Objects.equals(getOwner(), itemEntity.getOwner()) && ItemEntity.canMerge(getStack(), itemEntity.getStack())) {
+            if (itemEntity.getStack().getCount() < getStack().getCount()) {
+                ItemEntity.merge(itemEntity, itemEntity.getStack(), (ItemEntity) (Object) this, getStack());
+            } else {
+                ItemEntity.merge((ItemEntity) (Object) this, getStack(), itemEntity, itemEntity.getStack());
+            }
+        }
+    }
+
+    @Unique @Override
     public boolean isBlock() {
         return this.isBlock;
     }
@@ -114,10 +130,10 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
         // nothin
     }
 
-//    @Override
-//    public void addVelocity(double x, double y, double z) {
+    @Override
+    public void addVelocity(double x, double y, double z) {
 //         nothin
-//    }
+    }
 
     @Override
     public void setVelocity(double x, double y, double z) {
