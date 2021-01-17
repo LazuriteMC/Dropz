@@ -21,6 +21,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import physics.javax.vecmath.Quat4f;
 
+/**
+ * Modifies the renderer for {@link ItemEntity} by removing
+ * features such as hovering and rotating automatically.
+ * @see EntityRenderDispatcherMixin
+ */
 @Mixin(ItemEntityRenderer.class)
 public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity> {
     @Shadow @Final private ItemRenderer itemRenderer;

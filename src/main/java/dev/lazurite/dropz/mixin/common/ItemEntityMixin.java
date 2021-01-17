@@ -34,17 +34,13 @@ import java.util.UUID;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess {
-    @Shadow private int pickupDelay;
-    @Shadow private int age;
-
     @Unique private final Box blockBox = new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15);
     @Unique private final Box itemBox = new Box(-0.25, -0.25, -0.05, 0.25, 0.25, 0.05);
-
+    @Shadow private int pickupDelay;
+    @Shadow private int age;
     @Unique private Item prevItem;
     @Unique private boolean isBlock;
-
     @Shadow public abstract ItemStack getStack();
-
     @Shadow @Nullable public abstract UUID getOwner();
 
     public ItemEntityMixin(EntityType<?> type, World world) {

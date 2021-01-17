@@ -19,6 +19,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * This mixin is kind of a facepalm moment because it
+ * redoes a lot of Rayon does for you.
+ * @see ItemEntityRendererMixin
+ */
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
     @Shadow @Final public GameOptions gameOptions;

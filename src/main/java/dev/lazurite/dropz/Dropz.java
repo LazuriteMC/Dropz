@@ -8,6 +8,12 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.*;
 import net.minecraft.world.World;
 
+/**
+ * The main entrypoint for Dropz. All it really does is
+ * register {@link ItemEntity} with Rayon. It also sets up
+ * a collision event for {@link ItemEntity}s which allows
+ * them to merge when they collide with one another.
+ */
 public class Dropz implements ModInitializer {
 	public static final String MODID = "dropz";
 
