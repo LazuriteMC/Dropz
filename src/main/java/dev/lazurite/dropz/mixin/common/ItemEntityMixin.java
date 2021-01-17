@@ -3,6 +3,7 @@ package dev.lazurite.dropz.mixin.common;
 import dev.lazurite.dropz.util.ItemEntityAccess;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -24,7 +25,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import physics.com.bulletphysics.collision.shapes.CollisionShape;
+import physics.javax.vecmath.Quat4f;
 import physics.javax.vecmath.Vector3f;
+
+import java.util.Random;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess {
@@ -40,9 +44,19 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
         super(type, world);
     }
 
-    @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V")
-    public void init(EntityType<?> entityType, World world, CallbackInfo info) {
+    @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/World;DDD)V")
+    public void init(World world, double x, double y, double z, CallbackInfo info) {
+        updatePosition(x, y - 0.75f, z);
         prevItem = getStack().getItem();
+        Random random = new Random();
+        EntityRigidBody body = EntityRigidBody.get(this);
+        body.setAngularVelocity(new Vector3f(random.nextInt(20) - 10, random.nextInt(20) - 10, random.nextInt(20) - 10));
+        Quat4f orientation = new Quat4f(0, 1, 0, 0);
+        QuaternionHelper.rotateX(orientation, random.nextInt(180));
+        QuaternionHelper.rotateY(orientation, random.nextInt(180));
+        QuaternionHelper.rotateZ(orientation, random.nextInt(180));
+        body.setOrientation(orientation);
+
     }
 
     @Unique
