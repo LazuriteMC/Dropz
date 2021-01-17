@@ -20,6 +20,8 @@ public class Dropz implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		LOGGER.info("Yeet.");
+
 		DynamicEntityRegistry.INSTANCE.register(ItemEntity.class, BoundingBoxShapeProvider::get, 2.5f);
 		EntityBodyCollisionEvent.ENTITY_COLLISION.register((body1, body2) -> {
 			if (!body1.getEntity().getEntityWorld().isClient()) {

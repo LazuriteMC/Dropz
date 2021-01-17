@@ -1,4 +1,4 @@
-package dev.lazurite.dropz.util;
+package dev.lazurite.dropz.access;
 
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
 

@@ -1,10 +1,11 @@
 package dev.lazurite.dropz.mixin.common;
 
-import dev.lazurite.dropz.util.ItemEntityAccess;
+import dev.lazurite.dropz.access.ItemEntityAccess;
 import dev.lazurite.dropz.Dropz;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -21,6 +23,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,6 +35,7 @@ import physics.javax.vecmath.Quat4f;
 import physics.javax.vecmath.Vector3f;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * This is basically a rewrite of most of {@link ItemEntity}'s
@@ -49,6 +53,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
     @Shadow private int pickupDelay;
     @Shadow private int age;
     @Shadow public abstract ItemStack getStack();
+    @Shadow @Nullable public abstract UUID getThrower();
 
     private ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -84,7 +89,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
 
         shape.calculateLocalInertia(body.getMass(), inertia);
         body.setCollisionShape(shape);
-        body.setMassProps(body.getMass(), inertia);
+        body.setMassProps(isBlock ? 2.0f : 1.0f, inertia);
     }
 
     @Unique @Override
@@ -98,6 +103,23 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
             this.remove();
         } else {
             super.tick();
+            EntityRigidBody body = EntityRigidBody.get(this);
+
+            /* Momentum */
+            float p = body.getLinearVelocity(new Vector3f()).length() * body.getMass();
+
+            if (p >= 15 && age > 2) {
+                for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox().expand(1))) {
+                    if (getThrower() != null) {
+                        if (!entity.equals(getEntityWorld().getPlayerByUuid(getThrower()))) {
+                            entity.damage(DamageSource.GENERIC, p / 20.0f);
+
+                            /* Loses 90% of its speed */
+                            body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), 0.1f));
+                        }
+                    }
+                }
+            }
 
             if (!getStack().getItem().equals(prevItem)) {
                 this.genCollisionShape(getStack());
@@ -135,7 +157,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
 
     @Override
     public void setVelocity(double x, double y, double z) {
-        Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20, (float) z * 20);
+        Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20 - 1, (float) z * 20);
         EntityRigidBody.get(this).setLinearVelocity(velocity);
     }
 

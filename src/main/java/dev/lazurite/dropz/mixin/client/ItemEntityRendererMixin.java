@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.mixin.client;
 
-import dev.lazurite.dropz.util.ItemEntityAccess;
+import dev.lazurite.dropz.access.ItemEntityAccess;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;

@@ -1,11 +1,15 @@
 package dev.lazurite.dropz.mixin.common;
 
-import dev.lazurite.dropz.util.PlayerEntityAccess;
+import dev.lazurite.dropz.access.PlayerEntityAccess;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,16 +24,22 @@ import physics.javax.vecmath.Vector3f;
  * @see PlayerEntityAccess
  */
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin implements PlayerEntityAccess {
+public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityAccess {
     @Unique private float yeetMultiplier = 3.0f;
+
+    private PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
     @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"), cancellable = true)
     public void dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
-        if (((PlayerEntity) (Object) this).isSneaking()) {
-            ItemEntity entity = info.getReturnValue();
+        ItemEntity entity = info.getReturnValue();
 
-            if (entity != null) {
-                EntityRigidBody body = EntityRigidBody.get(entity);
+        if (entity != null) {
+            EntityRigidBody body = EntityRigidBody.get(entity);
+            body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), 1.25f));
+
+            if (isSneaking()) {
                 body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), yeetMultiplier));
                 info.setReturnValue(entity);
             }
