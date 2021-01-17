@@ -4,7 +4,8 @@
   "package": "dev.lazurite.dropz.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "common.ItemEntityMixin"
+    "common.ItemEntityMixin",
+    "common.PlayerEntityMixin"
   ],
   "client": [
     "client.ItemEntityRendererMixin",

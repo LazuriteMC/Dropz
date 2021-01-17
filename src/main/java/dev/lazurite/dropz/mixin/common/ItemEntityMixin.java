@@ -1,10 +1,13 @@
 package dev.lazurite.dropz.mixin.common;
 
 import dev.lazurite.dropz.util.ItemEntityAccess;
+import dev.lazurite.dropz.Dropz;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,14 +33,21 @@ import physics.javax.vecmath.Vector3f;
 
 import java.util.Random;
 
+/**
+ * This is basically a rewrite of most of {@link ItemEntity}'s
+ * functionality. It changes what happens when it ticks and when
+ * it's spawned into the world.
+ * @see ItemEntityAccess
+ * @see Dropz
+ */
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess {
     @Unique private final Box blockBox = new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15);
     @Unique private final Box itemBox = new Box(-0.25, -0.25, -0.05, 0.25, 0.25, 0.05);
-    @Shadow private int pickupDelay;
-    @Shadow private int age;
     @Unique private Item prevItem;
     @Unique private boolean isBlock;
+    @Shadow private int pickupDelay;
+    @Shadow private int age;
     @Shadow public abstract ItemStack getStack();
 
     private ItemEntityMixin(EntityType<?> type, World world) {
@@ -46,17 +56,22 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
 
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/World;DDD)V")
     public void init(World world, double x, double y, double z, CallbackInfo info) {
-        updatePosition(x, y - 0.75f, z);
-        prevItem = getStack().getItem();
-        Random random = new Random();
         EntityRigidBody body = EntityRigidBody.get(this);
-        body.setAngularVelocity(new Vector3f(random.nextInt(20) - 10, random.nextInt(20) - 10, random.nextInt(20) - 10));
+        Random random = new Random();
+        prevItem = getStack().getItem();
+
+        /* Shift down */
+        updatePosition(x, y - 0.75f, z);
+
+        /* Set random spin */
+        body.setAngularVelocity(new Vector3f(random.nextInt(10) - 5, random.nextInt(10) - 5, random.nextInt(10) - 5));
+
+        /* Set random orientation */
         Quat4f orientation = new Quat4f(0, 1, 0, 0);
         QuaternionHelper.rotateX(orientation, random.nextInt(180));
         QuaternionHelper.rotateY(orientation, random.nextInt(180));
         QuaternionHelper.rotateZ(orientation, random.nextInt(180));
         body.setOrientation(orientation);
-
     }
 
     @Unique
@@ -70,6 +85,11 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
         shape.calculateLocalInertia(body.getMass(), inertia);
         body.setCollisionShape(shape);
         body.setMassProps(body.getMass(), inertia);
+    }
+
+    @Unique @Override
+    public boolean isBlock() {
+        return this.isBlock;
     }
 
     @Override
@@ -107,9 +127,10 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
         }
     }
 
-    @Unique @Override
-    public boolean isBlock() {
-        return this.isBlock;
+    @Override
+    @Environment(EnvType.CLIENT)
+    public boolean shouldRender(double distance) {
+        return true;
     }
 
     @Override

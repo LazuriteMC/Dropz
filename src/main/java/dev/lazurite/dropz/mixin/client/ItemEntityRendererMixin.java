@@ -3,6 +3,8 @@ package dev.lazurite.dropz.mixin.client;
 import dev.lazurite.dropz.util.ItemEntityAccess;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -26,11 +28,12 @@ import physics.javax.vecmath.Quat4f;
  * features such as hovering and rotating automatically.
  * @see EntityRenderDispatcherMixin
  */
+@Environment(EnvType.CLIENT)
 @Mixin(ItemEntityRenderer.class)
 public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity> {
     @Shadow @Final private ItemRenderer itemRenderer;
 
-    protected ItemEntityRendererMixin(EntityRenderDispatcher dispatcher) {
+    private ItemEntityRendererMixin(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
     }
 

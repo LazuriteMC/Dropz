@@ -5,6 +5,8 @@ import dev.lazurite.rayon.api.registry.DynamicEntityRegistry;
 import dev.lazurite.rayon.api.shape.provider.BoundingBoxShapeProvider;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The main entrypoint for Dropz. All it really does is
@@ -14,6 +16,7 @@ import net.minecraft.entity.*;
  */
 public class Dropz implements ModInitializer {
 	public static final String MODID = "dropz";
+	public static final Logger LOGGER = LogManager.getLogger("Dropz");
 
 	@Override
 	public void onInitialize() {

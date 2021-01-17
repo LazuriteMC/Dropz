@@ -1,6 +1,8 @@
 package dev.lazurite.dropz.mixin.client;
 
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -24,6 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * redoes a lot of Rayon does for you.
  * @see ItemEntityRendererMixin
  */
+@Environment(EnvType.CLIENT)
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
     @Shadow @Final public GameOptions gameOptions;
