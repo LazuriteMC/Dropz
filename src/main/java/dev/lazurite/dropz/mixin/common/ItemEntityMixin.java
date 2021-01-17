@@ -9,10 +9,9 @@ import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -81,7 +80,8 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
 
     @Unique
     private void genCollisionShape(ItemStack stack) {
-        isBlock = Registry.BLOCK.get(Registry.ITEM.getId(stack.getItem())) != Blocks.AIR;
+        Block block = Registry.BLOCK.get(Registry.ITEM.getId(stack.getItem()));
+        isBlock = block != Blocks.AIR && !block.canMobSpawnInside();
 
         EntityRigidBody body = EntityRigidBody.get(this);
         CollisionShape shape = new BoundingBoxShape(isBlock ? blockBox : itemBox);
@@ -109,7 +109,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
             float p = body.getLinearVelocity(new Vector3f()).length() * body.getMass();
 
             if (p >= 15 && age > 2) {
-                for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox().expand(1))) {
+                for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
                     if (getThrower() != null) {
                         if (!entity.equals(getEntityWorld().getPlayerByUuid(getThrower()))) {
                             entity.damage(DamageSource.GENERIC, p / 20.0f);
@@ -122,7 +122,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
             }
 
             if (!getStack().getItem().equals(prevItem)) {
-                this.genCollisionShape(getStack());
+                genCollisionShape(getStack());
                 prevItem = getStack().getItem();
             }
 
@@ -153,6 +153,11 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
     @Environment(EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         return true;
+    }
+
+    @Override
+    protected void scheduleVelocityUpdate() {
+        this.velocityModified = false;
     }
 
     @Override

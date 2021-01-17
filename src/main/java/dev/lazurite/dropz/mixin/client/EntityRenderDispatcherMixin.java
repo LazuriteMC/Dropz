@@ -52,16 +52,15 @@ public abstract class EntityRenderDispatcherMixin {
                     this.renderFire(matrices, vertexConsumers, entity);
                 }
 
-                if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowRadius > 0.0F && !entity.isInvisible()) {
+                if (gameOptions.entityShadows && renderShadows) {
                     double g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
                     float h = (float) ((1.0D - g / 256.0D) * (double) entityRenderer.shadowOpacity);
                     if (h > 0.0F) {
-                        EntityRenderDispatcher.renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowRadius);
+                        EntityRenderDispatcher.renderShadow(matrices, vertexConsumers, entity, h, tickDelta, world, entityRenderer.shadowRadius);
                     }
                 }
 
                 matrices.pop();
-                info.cancel();
             } catch (Throwable var24) {
                 CrashReport crashReport = CrashReport.create(var24, "Rendering entity in world");
                 CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
@@ -73,6 +72,8 @@ public abstract class EntityRenderDispatcherMixin {
                 crashReportSection2.add("Delta", (Object) tickDelta);
                 throw new CrashException(crashReport);
             }
+
+            info.cancel();
         }
     }
 }
