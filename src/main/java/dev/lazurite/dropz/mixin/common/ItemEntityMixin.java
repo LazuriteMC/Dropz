@@ -8,7 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.MovementType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -16,10 +15,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -28,9 +25,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import physics.com.bulletphysics.collision.shapes.CollisionShape;
 import physics.javax.vecmath.Vector3f;
-
-import java.util.Objects;
-import java.util.UUID;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess {
@@ -41,9 +35,8 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
     @Unique private Item prevItem;
     @Unique private boolean isBlock;
     @Shadow public abstract ItemStack getStack();
-    @Shadow @Nullable public abstract UUID getOwner();
 
-    public ItemEntityMixin(EntityType<?> type, World world) {
+    private ItemEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
@@ -53,7 +46,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
     }
 
     @Unique
-    public void genCollisionShape(ItemStack stack) {
+    private void genCollisionShape(ItemStack stack) {
         isBlock = Registry.BLOCK.get(Registry.ITEM.getId(stack.getItem())) != Blocks.AIR;
 
         EntityRigidBody body = EntityRigidBody.get(this);
@@ -101,34 +94,8 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess
     }
 
     @Unique @Override
-    public void merge(ItemEntity itemEntity) {
-        if (Objects.equals(getOwner(), itemEntity.getOwner()) && ItemEntity.canMerge(getStack(), itemEntity.getStack())) {
-            if (itemEntity.getStack().getCount() < getStack().getCount()) {
-                ItemEntity.merge(itemEntity, itemEntity.getStack(), (ItemEntity) (Object) this, getStack());
-            } else {
-                ItemEntity.merge((ItemEntity) (Object) this, getStack(), itemEntity, itemEntity.getStack());
-            }
-        }
-    }
-
-    @Unique @Override
     public boolean isBlock() {
         return this.isBlock;
-    }
-
-    @Override
-    public boolean isInvisible() {
-        return false;
-    }
-
-    @Override
-    public void move(MovementType type, Vec3d movement) {
-        // nothin
-    }
-
-    @Override
-    public void addVelocity(double x, double y, double z) {
-//         nothin
     }
 
     @Override
