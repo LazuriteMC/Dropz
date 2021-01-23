@@ -1,4 +1,4 @@
-package dev.lazurite.dropz.access;
+package dev.lazurite.dropz.storage;
 
 import dev.lazurite.dropz.mixin.common.PlayerEntityMixin;
 
@@ -7,7 +7,7 @@ import dev.lazurite.dropz.mixin.common.PlayerEntityMixin;
  * internally stored yeet multiplier.
  * @see PlayerEntityMixin
  */
-public interface PlayerEntityAccess {
+public interface PlayerEntityStorage {
     void setYeetMultiplier(float yeetMultiplier);
     float getYeetMultiplier();
 }

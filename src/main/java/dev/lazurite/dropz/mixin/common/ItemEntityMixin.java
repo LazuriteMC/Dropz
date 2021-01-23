@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.mixin.common;
 
-import dev.lazurite.dropz.access.ItemEntityAccess;
+import dev.lazurite.dropz.storage.ItemEntityStorage;
 import dev.lazurite.dropz.Dropz;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
@@ -40,11 +40,11 @@ import java.util.UUID;
  * This is basically a rewrite of most of {@link ItemEntity}'s
  * functionality. It changes what happens when it ticks and when
  * it's spawned into the world.
- * @see ItemEntityAccess
+ * @see ItemEntityStorage
  * @see Dropz
  */
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixin extends Entity implements ItemEntityAccess {
+public abstract class ItemEntityMixin extends Entity implements ItemEntityStorage {
     @Unique private final Box blockBox = new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15);
     @Unique private final Box itemBox = new Box(-0.25, -0.25, -0.05, 0.25, 0.25, 0.05);
     @Unique private Item prevItem;

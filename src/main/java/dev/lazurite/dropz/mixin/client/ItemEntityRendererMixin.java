@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.mixin.client;
 
-import dev.lazurite.dropz.access.ItemEntityAccess;
+import dev.lazurite.dropz.storage.ItemEntityStorage;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
@@ -17,6 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Quaternion;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,12 +43,14 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         BakedModel bakedModel = this.itemRenderer.getHeldItemModel(itemStack, itemEntity.world, (LivingEntity)null);
         EntityRigidBody body = EntityRigidBody.get(itemEntity);
         Quaternion orientation = QuaternionHelper.quat4fToQuaternion(QuaternionHelper.slerp(body.getPrevOrientation(new Quat4f()), body.getTickOrientation(new Quat4f()), tickDelta));
-        boolean isBlock = ((ItemEntityAccess) itemEntity).isBlock();
+        boolean isBlock = ((ItemEntityStorage) itemEntity).isBlock();
         double offset = isBlock ? -body.getBox().getYLength() / 2.0 - 0.0375f : -0.1125f;
+        Box box = body.getBox();
 
         matrixStack.push();
+        matrixStack.translate(0, box.getYLength() / 2.0 - offset, 0);
         matrixStack.multiply(orientation);
-        matrixStack.translate(0, offset, 0);
+        matrixStack.translate(-box.getXLength() / 2.0, offset, -box.getZLength() / 2.0);
         this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
 

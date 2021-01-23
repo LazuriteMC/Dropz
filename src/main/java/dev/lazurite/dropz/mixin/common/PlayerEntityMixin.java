@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.mixin.common;
 
-import dev.lazurite.dropz.access.PlayerEntityAccess;
+import dev.lazurite.dropz.storage.PlayerEntityStorage;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.EntityType;
@@ -20,10 +20,10 @@ import physics.javax.vecmath.Vector3f;
  * This mixin allows the player to throw an item
  * <b><i>harder</i></b> whilst sneaking. Hence, they can
  * <b><i>yeet</i></b> the newly created {@link ItemEntity}.
- * @see PlayerEntityAccess
+ * @see PlayerEntityStorage
  */
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityAccess {
+public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityStorage {
     @Unique private float yeetMultiplier = 4.0f;
 
     private PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
