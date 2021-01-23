@@ -26,7 +26,6 @@ import physics.javax.vecmath.Quat4f;
 /**
  * Modifies the renderer for {@link ItemEntity} by removing
  * features such as hovering and rotating automatically.
- * @see EntityRenderDispatcherMixin
  */
 @Environment(EnvType.CLIENT)
 @Mixin(ItemEntityRenderer.class)

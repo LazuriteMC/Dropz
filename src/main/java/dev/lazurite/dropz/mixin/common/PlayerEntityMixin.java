@@ -3,7 +3,6 @@ package dev.lazurite.dropz.mixin.common;
 import dev.lazurite.dropz.access.PlayerEntityAccess;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +24,7 @@ import physics.javax.vecmath.Vector3f;
  */
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEntityAccess {
-    @Unique private float yeetMultiplier = 3.0f;
+    @Unique private float yeetMultiplier = 4.0f;
 
     private PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
