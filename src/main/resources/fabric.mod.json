@@ -14,7 +14,6 @@
 
   "license": "MIT",
   "icon": "assets/dropz/icon.png",
-  "accessWidener": "dropz.accesswidener",
 
   "environment": "*",
   "entrypoints": {
