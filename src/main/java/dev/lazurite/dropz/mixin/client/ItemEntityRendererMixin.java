@@ -48,9 +48,9 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         Box box = body.getBox();
 
         matrixStack.push();
-        matrixStack.translate(0, box.getYLength() / 2.0 - offset, 0);
+        matrixStack.translate(0, box.getYLength() / 2.0, 0);
         matrixStack.multiply(orientation);
-        matrixStack.translate(-box.getXLength() / 2.0, offset, -box.getZLength() / 2.0);
+        matrixStack.translate(0, offset, 0);
         this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
 
