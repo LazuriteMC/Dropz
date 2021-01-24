@@ -30,5 +30,11 @@
 
   "suggests": {
     "flamingo": "*"
+  },
+
+  "custom": {
+    "vanguard": {
+      "curse-project-id": "439696"
+    }
   }
 }
