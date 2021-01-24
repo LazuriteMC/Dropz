@@ -1,4 +1,4 @@
-package dev.lazurite.dropz.storage;
+package dev.lazurite.dropz.util.storage;
 
 import dev.lazurite.dropz.mixin.common.PlayerEntityMixin;
 

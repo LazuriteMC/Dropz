@@ -1,16 +1,17 @@
-package dev.lazurite.dropz.storage;
+package dev.lazurite.dropz.util.storage;
 
 import dev.lazurite.dropz.Dropz;
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
 import dev.lazurite.dropz.mixin.common.access.ItemEntityAccess;
+import dev.lazurite.dropz.util.DropType;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.world.World;
 
 /**
- * This interface allows access to the isBlock variable stored
- * in {@link ItemEntityMixin}. It also contains a helper
- * onCollide static method.
+ * This interface allows access to the {@link DropType} enum object
+ * being stored in {@link ItemEntityMixin}. It also has a static helper
+ * method for handling item collisions.
  * @see ItemEntityMixin
  * @see Dropz
  */
@@ -21,11 +22,11 @@ public interface ItemEntityStorage {
         if (!world.isClient()) {
             if (body1.getEntity() instanceof ItemEntity && body2.getEntity() instanceof ItemEntity) {
                 ItemEntity item1 = (ItemEntity) body1.getEntity();
-                ItemEntity item2 = (ItemEntity) body1.getEntity();
+                ItemEntity item2 = (ItemEntity) body2.getEntity();
                 ((ItemEntityAccess) item1).invokeTryMerge(item2);
             }
         }
     }
 
-    boolean isBlock();
+    DropType getDropType();
 }

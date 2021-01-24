@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.mixin.common;
 
-import dev.lazurite.dropz.storage.PlayerEntityStorage;
+import dev.lazurite.dropz.util.storage.PlayerEntityStorage;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.EntityType;

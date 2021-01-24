@@ -1,6 +1,7 @@
 package dev.lazurite.dropz.mixin.common;
 
-import dev.lazurite.dropz.storage.ItemEntityStorage;
+import dev.lazurite.dropz.util.DropType;
+import dev.lazurite.dropz.util.storage.ItemEntityStorage;
 import dev.lazurite.dropz.Dropz;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
@@ -9,18 +10,15 @@ import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,10 +43,9 @@ import java.util.UUID;
  */
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements ItemEntityStorage {
-    @Unique private final Box blockBox = new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15);
-    @Unique private final Box itemBox = new Box(-0.25, -0.25, -0.05, 0.25, 0.25, 0.05);
-    @Unique private Item prevItem;
-    @Unique private boolean isBlock;
+    @Unique private Item prevItem = Items.AIR;
+    @Unique private DropType type = DropType.ITEM;
+
     @Shadow private int pickupDelay;
     @Shadow private int age;
     @Shadow public abstract ItemStack getStack();
@@ -63,6 +60,7 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
         EntityRigidBody body = EntityRigidBody.get(this);
         Random random = new Random();
         prevItem = getStack().getItem();
+        type = DropType.get(getStack());
 
         /* Shift down */
         updatePosition(x, y - 0.75f, z);
@@ -80,21 +78,18 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
 
     @Unique
     private void genCollisionShape(ItemStack stack) {
-        Block block = Registry.BLOCK.get(Registry.ITEM.getId(stack.getItem()));
-        isBlock = block != Blocks.AIR && !block.canMobSpawnInside();
-
-        EntityRigidBody body = EntityRigidBody.get(this);
-        CollisionShape shape = new BoundingBoxShape(isBlock ? blockBox : itemBox);
+        type = DropType.get(stack);
         Vector3f inertia = new Vector3f();
-
+        EntityRigidBody body = EntityRigidBody.get(this);
+        CollisionShape shape = new BoundingBoxShape(type.getBox());
         shape.calculateLocalInertia(body.getMass(), inertia);
         body.setCollisionShape(shape);
-        body.setMassProps(isBlock ? 2.0f : 1.0f, inertia);
+        body.setMassProps(type.getMass(), inertia);
     }
 
     @Unique @Override
-    public boolean isBlock() {
-        return this.isBlock;
+    public DropType getDropType() {
+        return this.type;
     }
 
     @Override
