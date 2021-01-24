@@ -21,6 +21,9 @@ import net.minecraft.util.math.Quaternion;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import physics.javax.vecmath.Quat4f;
 
 /**
@@ -32,12 +35,12 @@ import physics.javax.vecmath.Quat4f;
 public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity> {
     @Shadow @Final private ItemRenderer itemRenderer;
 
-    private ItemEntityRendererMixin(EntityRenderDispatcher dispatcher) {
+    protected ItemEntityRendererMixin(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
     }
 
-    @Override
-    public void render(ItemEntity itemEntity, float f, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    @Inject(at = @At("HEAD"), method = "render", cancellable = true)
+    public void render(ItemEntity itemEntity, float f, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo info) {
         ItemStack itemStack = itemEntity.getStack();
         BakedModel bakedModel = this.itemRenderer.getHeldItemModel(itemStack, itemEntity.world, null);
         EntityRigidBody body = EntityRigidBody.get(itemEntity);
@@ -56,7 +59,6 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
         this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
         matrixStack.pop();
-
-        super.render(itemEntity, f, tickDelta, matrixStack, vertexConsumerProvider, i);
+        info.cancel();
     }
 }
