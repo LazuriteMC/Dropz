@@ -5,7 +5,6 @@ import dev.lazurite.dropz.util.storage.ItemEntityStorage;
 import dev.lazurite.dropz.Dropz;
 import dev.lazurite.rayon.api.packet.RayonSpawnS2CPacket;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import dev.lazurite.rayon.physics.shape.BoundingBoxShape;
 import net.fabricmc.api.EnvType;
@@ -19,6 +18,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,10 +28,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import physics.com.bulletphysics.collision.shapes.CollisionShape;
-import physics.javax.vecmath.Quat4f;
 import physics.javax.vecmath.Vector3f;
 
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -45,6 +43,7 @@ import java.util.UUID;
 public abstract class ItemEntityMixin extends Entity implements ItemEntityStorage {
     @Unique private Item prevItem = Items.AIR;
     @Unique private DropType type = DropType.ITEM;
+    @Unique private Vec3d throwDirection;
 
     @Shadow private int pickupDelay;
     @Shadow private int age;
@@ -57,23 +56,8 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
 
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/World;DDD)V")
     public void init(World world, double x, double y, double z, CallbackInfo info) {
-        EntityRigidBody body = EntityRigidBody.get(this);
-        Random random = new Random();
         prevItem = getStack().getItem();
         type = DropType.get(getStack());
-
-        /* Shift down */
-        updatePosition(x, y - 0.75f, z);
-
-        /* Set random spin */
-        body.setAngularVelocity(new Vector3f(random.nextInt(10) - 5, random.nextInt(10) - 5, random.nextInt(10) - 5));
-
-        /* Set random orientation */
-        Quat4f orientation = new Quat4f(0, 1, 0, 0);
-        QuaternionHelper.rotateX(orientation, random.nextInt(180));
-        QuaternionHelper.rotateY(orientation, random.nextInt(180));
-        QuaternionHelper.rotateZ(orientation, random.nextInt(180));
-        body.setOrientation(orientation);
     }
 
     @Unique
@@ -102,8 +86,9 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
 
             /* Momentum */
             float p = body.getLinearVelocity(new Vector3f()).length() * body.getMass();
+            float v = body.getLinearVelocity(new Vector3f()).length();
 
-            if (p >= 15 && age > 2) {
+            if (v >= 15) {
                 for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
                     if (getThrower() != null) {
                         if (!entity.equals(getEntityWorld().getPlayerByUuid(getThrower()))) {

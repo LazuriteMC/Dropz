@@ -2,6 +2,7 @@ package dev.lazurite.dropz.mixin.common;
 
 import dev.lazurite.dropz.util.storage.PlayerEntityStorage;
 import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
 import dev.lazurite.rayon.physics.helper.math.VectorHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -14,6 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import physics.javax.vecmath.Quat4f;
 import physics.javax.vecmath.Vector3f;
 
 /**
@@ -35,8 +37,20 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         ItemEntity entity = info.getReturnValue();
 
         if (entity != null) {
+            entity.updatePosition(entity.getX(), entity.getY() - 0.75, entity.getZ());
+
             EntityRigidBody body = EntityRigidBody.get(entity);
             body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), 1.25f));
+
+            /* Set random spin */
+            body.setAngularVelocity(new Vector3f(random.nextInt(10) - 5, random.nextInt(10) - 5, random.nextInt(10) - 5));
+
+            /* Set random orientation */
+            Quat4f orientation = new Quat4f(0, 1, 0, 0);
+            QuaternionHelper.rotateX(orientation, random.nextInt(180));
+            QuaternionHelper.rotateY(orientation, random.nextInt(180));
+            QuaternionHelper.rotateZ(orientation, random.nextInt(180));
+            body.setOrientation(orientation);
 
             if (isSneaking()) {
                 body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), yeetMultiplier));

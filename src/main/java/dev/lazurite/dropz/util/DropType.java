@@ -76,7 +76,7 @@ public enum DropType {
         } else {
             String key = stack.getItem().getTranslationKey();
 
-            if (key.contains("plate") || key.contains("carpet") || key.equals("minecraft:snow")) {
+            if (key.contains("pressure") || key.contains("carpet") || key.equals("minecraft:snow")) {
                 return PLATE;
             } else if (key.contains("button")) {
                 return BUTTON;
