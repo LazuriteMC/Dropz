@@ -34,7 +34,6 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
     private ItemEntityRendererMixin(EntityRenderDispatcher dispatcher) {
         super(dispatcher);
-        this.shadowRadius = 0.0f;
     }
 
     @Override
@@ -44,6 +43,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         EntityRigidBody body = EntityRigidBody.get(itemEntity);
         Quaternion orientation = QuaternionHelper.quat4fToQuaternion(QuaternionHelper.slerp(body.getPrevOrientation(new Quat4f()), body.getTickOrientation(new Quat4f()), tickDelta));
         DropType type = ((ItemEntityStorage) itemEntity).getDropType();
+        this.shadowRadius = 0.0f;
 
         matrixStack.push();
         matrixStack.translate(0, body.getBox().getYLength() / 2.0, 0);

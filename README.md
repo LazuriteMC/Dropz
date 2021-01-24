@@ -1,6 +1,12 @@
 # Dropz 
 
-[![Discord chat](https://img.shields.io/badge/chat%20on-discord-7289DA)](https://discord.gg/efCMR7U)
+[![GitHub](https://img.shields.io/github/license/LazuriteMC/Dropz?color=A31F34&label=License&labelColor=8A8B8C)](https://github.com/LazuriteMC/Dropz/blob/main/LICENSE)
+[![Discord](https://img.shields.io/discord/719662192601071747?color=7289DA&label=Discord&labelColor=2C2F33&logo=Discord)](https://discord.gg/NNPPHN7b3P)
 
-### Community
-If you wanna find out what we're working on with Dropz or our [other mods](https://github.com/LazuriteMC), join our discord [here](https://discord.gg/efCMR7U).
+Items that obey the laws of physics!
+
+![](https://github.com/LazuriteMC/lazuritemc.github.io/raw/master/gif/yeet.gif)
+![](https://github.com/LazuriteMC/lazuritemc.github.io/raw/master/gif/apple_time.gif)
+
+## Community
+If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P).
