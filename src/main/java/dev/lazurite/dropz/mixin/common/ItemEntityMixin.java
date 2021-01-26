@@ -18,7 +18,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,7 +42,6 @@ import java.util.UUID;
 public abstract class ItemEntityMixin extends Entity implements ItemEntityStorage {
     @Unique private Item prevItem = Items.AIR;
     @Unique private DropType type = DropType.ITEM;
-    @Unique private Vec3d throwDirection;
 
     @Shadow private int pickupDelay;
     @Shadow private int age;
@@ -76,8 +74,8 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
         return this.type;
     }
 
-    @Override
-    public void tick() {
+    @Inject(at = @At("HEAD"), method = "tick", cancellable = true)
+    public void tick(CallbackInfo info) {
         if (this.getStack().isEmpty()) {
             this.remove();
         } else {
@@ -127,17 +125,14 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
                 this.remove();
             }
         }
+
+        info.cancel();
     }
 
     @Override
     @Environment(EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         return true;
-    }
-
-    @Override
-    protected void scheduleVelocityUpdate() {
-        this.velocityModified = false;
     }
 
     @Override
