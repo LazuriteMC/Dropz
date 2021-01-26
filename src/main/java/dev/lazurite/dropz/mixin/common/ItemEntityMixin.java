@@ -15,10 +15,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.Packet;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,7 +39,6 @@ import java.util.UUID;
 public abstract class ItemEntityMixin extends Entity implements ItemEntityStorage {
     @Unique private Item prevItem = Items.AIR;
     @Unique private DropType type = DropType.ITEM;
-    @Unique private Vec3d throwDirection;
 
     @Shadow private int pickupDelay;
     @Shadow private int age;
@@ -71,73 +66,72 @@ public abstract class ItemEntityMixin extends Entity implements ItemEntityStorag
         body.setMassProps(type.getMass(), inertia);
     }
 
+    @Unique
+    private void doDamage() {
+        EntityRigidBody body = EntityRigidBody.get(this);
+
+        /* Momentum */
+        float p = body.getLinearVelocity(new Vector3f()).length() * body.getMass();
+        float v = body.getLinearVelocity(new Vector3f()).length();
+
+        if (v >= 15) {
+            for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
+                if (getThrower() != null) {
+                    if (!entity.equals(getEntityWorld().getPlayerByUuid(getThrower()))) {
+                        entity.damage(DamageSource.GENERIC, p / 20.0f);
+
+                        /* Loses 90% of its speed */
+                        body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), 0.1f));
+                    }
+                }
+            }
+        }
+    }
+
     @Unique @Override
     public DropType getDropType() {
         return this.type;
     }
 
-    @Override
-    public void tick() {
-        if (this.getStack().isEmpty()) {
-            this.remove();
-        } else {
-            super.tick();
-            EntityRigidBody body = EntityRigidBody.get(this);
-
-            /* Momentum */
-            float p = body.getLinearVelocity(new Vector3f()).length() * body.getMass();
-            float v = body.getLinearVelocity(new Vector3f()).length();
-
-            if (v >= 15) {
-                for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
-                    if (getThrower() != null) {
-                        if (!entity.equals(getEntityWorld().getPlayerByUuid(getThrower()))) {
-                            entity.damage(DamageSource.GENERIC, p / 20.0f);
-
-                            /* Loses 90% of its speed */
-                            body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), 0.1f));
-                        }
-                    }
-                }
-            }
-
-            if (!getStack().getItem().equals(prevItem)) {
-                genCollisionShape(getStack());
-                prevItem = getStack().getItem();
-            }
-
-            if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
-                --this.pickupDelay;
-            }
-
-            boolean hasMoved = MathHelper.floor(this.prevX) != MathHelper.floor(this.getX()) || MathHelper.floor(this.prevY) != MathHelper.floor(this.getY()) || MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
-
-            if (this.age % (hasMoved ? 2 : 40) == 0) {
-                if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA) && !this.isFireImmune()) {
-                    this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
-                }
-            }
-
-            if (this.age != -32768) {
-                ++this.age;
-            }
-
-            /* After 5 minutes, say goodbye */
-            if (!this.world.isClient && this.age >= 6000) {
-                this.remove();
-            }
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/entity/ItemEntity;move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V"
+            ),
+            cancellable = true
+    )
+    public void tick(CallbackInfo info) {
+        if (!getStack().getItem().equals(prevItem)) {
+            genCollisionShape(getStack());
+            prevItem = getStack().getItem();
         }
+
+        this.doDamage();
+
+        if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
+            --this.pickupDelay;
+        }
+
+        if (this.age != -32768) {
+            ++this.age;
+        }
+
+        if (!this.world.isClient && this.age >= 6000) {
+            this.remove();
+        }
+
+        info.cancel();
+    }
+
+    @Override
+    protected void pushOutOfBlocks(double x, double y, double z) {
     }
 
     @Override
     @Environment(EnvType.CLIENT)
     public boolean shouldRender(double distance) {
         return true;
-    }
-
-    @Override
-    protected void scheduleVelocityUpdate() {
-        this.velocityModified = false;
     }
 
     @Override

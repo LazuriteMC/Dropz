@@ -26,9 +26,6 @@ dependencies {
 	// Rayon
 	modImplementation "com.github.LazuriteMC:Rayon:${project.rayon_version}"
 	include "com.github.LazuriteMC:Rayon:${project.rayon_version}"
-
-	// Vanguard
-	include "io.github.ladysnake:vanguard:${vanguard_version}"
 }
 
 processResources {
