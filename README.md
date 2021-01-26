@@ -26,4 +26,4 @@ yourself in a situation where your world is unplayable, you can simply remove th
 folder to disable the mod.
 
 ## Community
-If you need help with Rayon or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P).
+If you need help with Dropz or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P).
