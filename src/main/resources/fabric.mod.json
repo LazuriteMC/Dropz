@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Dropz",
-  "description": "Dynamic item drops.",
+  "description": "Dynamic item drops for Fabric.",
   "authors": [ "The Lazurite Team" ],
   "contact": {
     "homepage": "https://lazurite.dev",

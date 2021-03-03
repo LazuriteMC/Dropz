@@ -4,7 +4,7 @@ import dev.lazurite.dropz.Dropz;
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
 import dev.lazurite.dropz.mixin.common.access.ItemEntityAccess;
 import dev.lazurite.dropz.util.DropType;
-import dev.lazurite.rayon.physics.body.EntityRigidBody;
+import dev.lazurite.rayon.api.element.PhysicsElement;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.world.World;
 
@@ -16,13 +16,13 @@ import net.minecraft.world.World;
  * @see Dropz
  */
 public interface ItemEntityStorage {
-    static void onCollide(EntityRigidBody body1, EntityRigidBody body2) {
-        World world = body1.getDynamicsWorld().getWorld();
+    static void onCollide(PhysicsElement body1, PhysicsElement body2) {
+        if (body1 instanceof ItemEntity && body2 instanceof ItemEntity) {
+            ItemEntity item1 = (ItemEntity) body1.asEntity();
+            ItemEntity item2 = (ItemEntity) body2.asEntity();
+            World world = item1.getEntityWorld();
 
-        if (!world.isClient()) {
-            if (body1.getEntity() instanceof ItemEntity && body2.getEntity() instanceof ItemEntity) {
-                ItemEntity item1 = (ItemEntity) body1.getEntity();
-                ItemEntity item2 = (ItemEntity) body2.getEntity();
+            if (!world.isClient()) {
                 ((ItemEntityAccess) item1).invokeTryMerge(item2);
             }
         }

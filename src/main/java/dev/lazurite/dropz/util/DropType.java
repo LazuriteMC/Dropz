@@ -16,7 +16,7 @@ import net.minecraft.util.registry.Registry;
  * @see ItemEntityMixin
  */
 public enum DropType {
-    ITEM(new Box(-0.25, -0.25, -0.05, 0.25, 0.25, 0.05), 1.0f, 0.1125f),
+    ITEM(new Box(-0.25, -0.25, -0.03, 0.25, 0.25, 0.03), 1.0f, 0.1125f),
     BLOCK(new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15), 2.0f, 0.1875f),
 
     /* Special */
@@ -60,13 +60,13 @@ public enum DropType {
 
             if (key.contains("fence") || key.contains("wall")) {
                 return FENCE;
-            } else if (key.contains("slab") || key.contains("sensor")) {
+            } else if (key.contains("slab") || key.contains("daylight")) {
                 return SLAB;
             } else if (key.contains("trap")) {
                 return TRAP;
             } else if (key.contains("door")) {
                 return DOOR;
-            } else if (key.contains("bed")) {
+            } else if (key.contains("bed") && !key.contains("bedrock")) {
                 return BED;
             } else if (key.contains("lantern") || key.contains("campfire") || key.contains("bell") || key.contains("iron_bars") || key.contains("chain") || key.contains("pane") || key.contains("hopper") || key.contains("cobweb")) {
                 return ITEM;
