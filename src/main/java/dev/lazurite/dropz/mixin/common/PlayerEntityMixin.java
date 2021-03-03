@@ -1,9 +1,12 @@
 package dev.lazurite.dropz.mixin.common;
 
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import dev.lazurite.dropz.util.storage.PlayerEntityStorage;
-import dev.lazurite.rayon.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
-import dev.lazurite.rayon.physics.helper.math.VectorHelper;
+import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.impl.Rayon;
+import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
+import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -15,8 +18,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import physics.javax.vecmath.Quat4f;
-import physics.javax.vecmath.Vector3f;
 
 /**
  * This mixin allows the player to throw an item
@@ -39,23 +40,27 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         if (entity != null) {
             entity.updatePosition(entity.getX(), entity.getY() - 0.75, entity.getZ());
 
-            EntityRigidBody body = EntityRigidBody.get(entity);
-            body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), 1.25f));
-
-            /* Set random spin */
-            body.setAngularVelocity(new Vector3f(random.nextInt(10) - 5, random.nextInt(10) - 5, random.nextInt(10) - 5));
-
-            /* Set random orientation */
-            Quat4f orientation = new Quat4f(0, 1, 0, 0);
+            ElementRigidBody body = ((PhysicsElement) entity).getRigidBody();
+            Quaternion orientation = new Quaternion();
             QuaternionHelper.rotateX(orientation, random.nextInt(180));
             QuaternionHelper.rotateY(orientation, random.nextInt(180));
             QuaternionHelper.rotateZ(orientation, random.nextInt(180));
-            body.setOrientation(orientation);
 
-            if (isSneaking()) {
-                body.setLinearVelocity(VectorHelper.mul(body.getLinearVelocity(new Vector3f()), yeetMultiplier));
-                info.setReturnValue(entity);
-            }
+            Rayon.THREAD.get(world).execute(space -> {
+                /* Set initial velocity */
+                body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(1.25f));
+
+                /* Set random spin */
+                body.setAngularVelocity(new Vector3f(random.nextInt(10) - 5, random.nextInt(10) - 5, random.nextInt(10) - 5));
+
+                /* Set random orientation */
+                body.setPhysicsRotation(orientation);
+
+                /* Multiply velocity by yeet multiplier if player is sneaking */
+                if (isSneaking()) {
+                    body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(yeetMultiplier));
+                }
+            });
         }
     }
 

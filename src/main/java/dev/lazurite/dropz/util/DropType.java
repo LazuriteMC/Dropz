@@ -66,7 +66,7 @@ public enum DropType {
                 return TRAP;
             } else if (key.contains("door")) {
                 return DOOR;
-            } else if (key.contains("bed")) {
+            } else if (key.contains("bed") && !key.contains("bedrock")) {
                 return BED;
             } else if (key.contains("lantern") || key.contains("campfire") || key.contains("bell") || key.contains("iron_bars") || key.contains("chain") || key.contains("pane") || key.contains("hopper") || key.contains("cobweb")) {
                 return ITEM;

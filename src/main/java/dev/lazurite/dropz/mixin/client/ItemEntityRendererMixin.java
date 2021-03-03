@@ -2,8 +2,8 @@ package dev.lazurite.dropz.mixin.client;
 
 import dev.lazurite.dropz.util.DropType;
 import dev.lazurite.dropz.util.storage.ItemEntityStorage;
-import dev.lazurite.rayon.physics.body.EntityRigidBody;
-import dev.lazurite.rayon.physics.helper.math.QuaternionHelper;
+import dev.lazurite.rayon.api.element.PhysicsElement;
+import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import physics.javax.vecmath.Quat4f;
 
 /**
  * Modifies the renderer for {@link ItemEntity} by removing
@@ -43,15 +42,14 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
     public void render(ItemEntity itemEntity, float f, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo info) {
         ItemStack itemStack = itemEntity.getStack();
         BakedModel bakedModel = this.itemRenderer.getHeldItemModel(itemStack, itemEntity.world, null);
-        EntityRigidBody body = EntityRigidBody.get(itemEntity);
-        Quaternion orientation = QuaternionHelper.quat4fToQuaternion(QuaternionHelper.slerp(body.getPrevOrientation(new Quat4f()), body.getTickOrientation(new Quat4f()), tickDelta));
+        Quaternion orientation = QuaternionHelper.bulletToMinecraft(((PhysicsElement) itemEntity).getPhysicsRotation(new com.jme3.math.Quaternion(), tickDelta));
         DropType type = ((ItemEntityStorage) itemEntity).getDropType();
         this.shadowRadius = 0.0f;
 
         matrixStack.push();
-        matrixStack.translate(0, body.getBox().getYLength() / 2.0, 0);
         matrixStack.multiply(orientation);
         matrixStack.translate(0, -type.getOffset(), 0);
+        matrixStack.scale(1.15f, 1.15f, 1.15f);
 
         if (type.equals(DropType.DRAGON)) {
             matrixStack.translate(0, 0, -0.25f);
