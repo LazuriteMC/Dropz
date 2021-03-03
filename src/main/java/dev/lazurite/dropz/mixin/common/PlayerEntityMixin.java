@@ -38,7 +38,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         ItemEntity entity = info.getReturnValue();
 
         if (entity != null) {
-            entity.updatePosition(entity.getX(), entity.getY() - 0.75, entity.getZ());
+            entity.updatePosition(entity.getX(), entity.getY() - 0.5, entity.getZ());
 
             ElementRigidBody body = ((PhysicsElement) entity).getRigidBody();
             Quaternion orientation = new Quaternion();
