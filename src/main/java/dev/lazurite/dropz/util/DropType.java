@@ -16,7 +16,7 @@ import net.minecraft.util.registry.Registry;
  * @see ItemEntityMixin
  */
 public enum DropType {
-    ITEM(new Box(-0.25, -0.25, -0.05, 0.25, 0.25, 0.05), 1.0f, 0.1125f),
+    ITEM(new Box(-0.25, -0.25, -0.03, 0.25, 0.25, 0.03), 1.0f, 0.1125f),
     BLOCK(new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15), 2.0f, 0.1875f),
 
     /* Special */
