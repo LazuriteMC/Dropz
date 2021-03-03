@@ -47,9 +47,9 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         this.shadowRadius = 0.0f;
 
         matrixStack.push();
+        matrixStack.scale(1.15f, 1.15f, 1.15f);
         matrixStack.multiply(orientation);
         matrixStack.translate(0, -type.getOffset(), 0);
-        matrixStack.scale(1.15f, 1.15f, 1.15f);
 
         if (type.equals(DropType.DRAGON)) {
             matrixStack.translate(0, 0, -0.25f);
