@@ -136,7 +136,7 @@ public abstract class ItemEntityMixin extends Entity implements PhysicsElement, 
 
     @Override
     public void setVelocity(double x, double y, double z) {
-        Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20 - 1, (float) z * 20).multLocal(getRigidBody().getMass());
+        Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20, (float) z * 20).multLocal(getRigidBody().getMass());
         Rayon.THREAD.get(world).execute(space -> getRigidBody().applyCentralImpulse(velocity));
     }
 
