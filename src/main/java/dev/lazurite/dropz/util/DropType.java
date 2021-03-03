@@ -60,7 +60,7 @@ public enum DropType {
 
             if (key.contains("fence") || key.contains("wall")) {
                 return FENCE;
-            } else if (key.contains("slab") || key.contains("sensor")) {
+            } else if (key.contains("slab") || key.contains("daylight")) {
                 return SLAB;
             } else if (key.contains("trap")) {
                 return TRAP;

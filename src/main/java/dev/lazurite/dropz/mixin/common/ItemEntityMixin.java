@@ -60,7 +60,11 @@ public abstract class ItemEntityMixin extends Entity implements PhysicsElement, 
     private void genCollisionShape(ItemStack stack) {
         type = DropType.get(stack);
         CollisionShape shape = new BoundingBoxShape(type.getBox());
-        Rayon.THREAD.get(world).execute(space -> getRigidBody().setCollisionShape(shape));
+
+        Rayon.THREAD.get(world).execute(space -> {
+            getRigidBody().setCollisionShape(shape);
+            getRigidBody().setMass(type.getMass());
+        });
     }
 
     @Unique
