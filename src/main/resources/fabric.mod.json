@@ -33,6 +33,9 @@
   },
 
   "custom": {
+    "modmenu": {
+      "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" }
+    },
     "vanguard": {
       "curse-project-id": "439696"
     }
