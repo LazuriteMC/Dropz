@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "common.access.ItemEntityAccess",
+    "common.EntityMixin",
     "common.ItemEntityMixin",
     "common.PlayerEntityMixin"
   ],

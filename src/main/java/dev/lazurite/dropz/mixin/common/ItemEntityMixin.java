@@ -17,6 +17,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
 
@@ -36,61 +39,18 @@ import java.util.UUID;
  * @see Dropz
  */
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixin extends Entity implements PhysicsElement, ItemEntityStorage {
+public abstract class ItemEntityMixin implements PhysicsElement, ItemEntityStorage {
     @Unique private final ElementRigidBody rigidBody = new ElementRigidBody(this);
     @Unique private Item prevItem = Items.AIR;
     @Unique private DropType type = DropType.ITEM;
-
-    @Shadow private int pickupDelay;
-    @Shadow private int age;
     @Shadow public abstract ItemStack getStack();
     @Shadow @Nullable public abstract UUID getThrower();
-
-    private ItemEntityMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
 
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V")
     public void init(EntityType<? extends ItemEntity> type, World world, CallbackInfo info) {
         this.prevItem = getStack().getItem();
         this.type = DropType.get(getStack());
-    }
-
-    @Unique
-    private void genCollisionShape(ItemStack stack) {
-        type = DropType.get(stack);
-        CollisionShape shape = new BoundingBoxShape(type.getBox());
-
-        Rayon.THREAD.get(world).execute(space -> {
-            getRigidBody().setCollisionShape(shape);
-            getRigidBody().setMass(type.getMass());
-        });
-    }
-
-    @Unique
-    private void doDamage() {
-        /* Momentum */
-        float p = getRigidBody().getLinearVelocity(new Vector3f()).length() * getRigidBody().getMass();
-        float v = getRigidBody().getLinearVelocity(new Vector3f()).length();
-
-        if (v >= 15) {
-            for (Entity entity : getEntityWorld().getOtherEntities(this, getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
-                if (getThrower() != null) {
-                    if (!entity.equals(getEntityWorld().getPlayerByUuid(getThrower()))) {
-                        entity.damage(DamageSource.GENERIC, p / 20.0f);
-
-                        /* Loses 90% of its speed */
-                        Rayon.THREAD.get(world).execute(space ->
-                            getRigidBody().applyCentralImpulse(getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.1f).multLocal(getRigidBody().getMass())));
-                    }
-                }
-            }
-        }
-    }
-
-    @Unique @Override
-    public DropType getDropType() {
-        return this.type;
+        this.rigidBody.setAngularDamping(0.4f);
     }
 
     @Inject(
@@ -104,40 +64,57 @@ public abstract class ItemEntityMixin extends Entity implements PhysicsElement, 
     )
     public void tick(CallbackInfo info) {
         if (!getStack().getItem().equals(prevItem)) {
-            genCollisionShape(getStack());
-            prevItem = getStack().getItem();
+            this.type = DropType.get(getStack());
+            this.prevItem = getStack().getItem();
+            CollisionShape shape = new BoundingBoxShape(type.getBox());
+
+            Rayon.THREAD.get(asEntity().getEntityWorld()).execute(space -> {
+                getRigidBody().setCollisionShape(shape);
+                getRigidBody().setMass(type.getMass());
+            });
         }
 
-        this.doDamage();
+        doDamage();
+    }
 
-        if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
-            --this.pickupDelay;
-        }
+//    @Redirect(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ItemEntity;velocityDirty:Z", ordinal = 1))
+//    public void isVelocityDirty(ItemEntity itemEntity, boolean bl) {
+//        bl = false;
+//    }
 
-        if (this.age != -32768) {
-            ++this.age;
-        }
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
+    public void setVelocityInTick0(ItemEntity itemEntity, Vec3d velocity) { }
 
-        if (!this.world.isClient && this.age >= 6000) {
-            this.remove();
-        }
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V", ordinal = 1))
+    public void setVelocityInTick1(ItemEntity itemEntity, Vec3d velocity) { }
 
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V", ordinal = 2))
+    public void setVelocityInTick2(ItemEntity itemEntity, Vec3d velocity) { }
+
+    @Environment(EnvType.CLIENT)
+    @Inject(method = "method_27314", at = @At("HEAD"), cancellable = true)
+    public void method_27314(float f, CallbackInfoReturnable<Float> info) {
+        info.setReturnValue(0.0f);
+    }
+
+    @Inject(method = "canMerge()Z", at = @At("HEAD"), cancellable = true)
+    public void canMerge(CallbackInfoReturnable<Boolean> info) {
+        info.setReturnValue(false);
+    }
+
+    @Inject(method = "applyBuoyancy", at = @At("HEAD"), cancellable = true)
+    public void applyBuoyancy(CallbackInfo info) {
         info.cancel();
     }
 
-    @Override
-    protected void pushOutOfBlocks(double x, double y, double z) { }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public boolean shouldRender(double distance) {
-        return true;
+    @Inject(method = "method_24348", at = @At("HEAD"), cancellable = true)
+    private void method_24348(CallbackInfo info) {
+       info.cancel();
     }
 
     @Override
-    public void setVelocity(double x, double y, double z) {
-        Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20, (float) z * 20).multLocal(getRigidBody().getMass());
-        Rayon.THREAD.get(world).execute(space -> getRigidBody().applyCentralImpulse(velocity));
+    public DropType getDropType() {
+        return this.type;
     }
 
     @Override
@@ -147,4 +124,26 @@ public abstract class ItemEntityMixin extends Entity implements PhysicsElement, 
 
     @Override
     public void step(MinecraftSpace space) { }
+
+    private void doDamage() {
+        /* Momentum */
+        float p = getRigidBody().getLinearVelocity(new Vector3f()).length() * getRigidBody().getMass();
+
+        /* Velocity */
+        float v = getRigidBody().getLinearVelocity(new Vector3f()).length();
+
+        if (v >= 15) {
+            for (Entity entity : asEntity().getEntityWorld().getOtherEntities(((ItemEntity) (Object) this), ((ItemEntity) (Object) this).getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
+                if (getThrower() != null) {
+                    if (!entity.equals(asEntity().getEntityWorld().getPlayerByUuid(getThrower()))) {
+                        entity.damage(DamageSource.GENERIC, p / 20.0f);
+
+                        /* Loses 90% of its speed */
+                        Rayon.THREAD.get(asEntity().getEntityWorld()).execute(space ->
+                                getRigidBody().applyCentralImpulse(getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.1f).multLocal(getRigidBody().getMass())));
+                    }
+                }
+            }
+        }
+    }
 }
