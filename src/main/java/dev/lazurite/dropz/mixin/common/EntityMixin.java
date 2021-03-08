@@ -42,7 +42,7 @@ public class EntityMixin {
         if (((Entity) (Object) this) instanceof ItemEntity) {
             ElementRigidBody rigidBody = ((PhysicsElement) this).getRigidBody();
             Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20, (float) z * 20).multLocal(rigidBody.getMass());
-            Rayon.THREAD.get(world).execute(space -> rigidBody.applyCentralImpulse(velocity));
+            Rayon.SPACE.get(world).getThread().execute(() -> rigidBody.applyCentralImpulse(velocity));
         }
     }
 

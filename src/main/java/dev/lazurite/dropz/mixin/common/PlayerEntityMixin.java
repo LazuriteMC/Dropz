@@ -46,7 +46,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             QuaternionHelper.rotateY(orientation, random.nextInt(180));
             QuaternionHelper.rotateZ(orientation, random.nextInt(180));
 
-            Rayon.THREAD.get(world).execute(space -> {
+            Rayon.SPACE.get(world).getThread().execute(() -> {
                 /* Set initial velocity */
                 body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(1.25f));
 
