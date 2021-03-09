@@ -41,7 +41,7 @@ public class EntityMixin {
     public void setVelocity(double x, double y, double z, CallbackInfo info) {
         if (((Entity) (Object) this) instanceof ItemEntity) {
             ElementRigidBody rigidBody = ((PhysicsElement) this).getRigidBody();
-            Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20, (float) z * 20).multLocal(rigidBody.getMass());
+            Vector3f velocity = new Vector3f((float) x * 20, (float) y * 20 * 0.5f, (float) z * 20).multLocal(rigidBody.getMass());
             Rayon.SPACE.get(world).getThread().execute(() -> rigidBody.applyCentralImpulse(velocity));
         }
     }
