@@ -40,7 +40,7 @@ import java.util.UUID;
  */
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin implements PhysicsElement, ItemEntityStorage {
-    @Unique private final ElementRigidBody rigidBody = new ElementRigidBody(this);
+    @Unique private final ElementRigidBody rigidBody = new ElementRigidBody((Entity) (Object) this);
     @Unique private Item prevItem = Items.AIR;
     @Unique private DropType type = DropType.ITEM;
     @Shadow public abstract ItemStack getStack();
@@ -68,7 +68,7 @@ public abstract class ItemEntityMixin implements PhysicsElement, ItemEntityStora
             this.prevItem = getStack().getItem();
             CollisionShape shape = new BoundingBoxShape(type.getBox());
 
-            Rayon.THREAD.get(asEntity().getEntityWorld()).execute(space -> {
+            Rayon.SPACE.get(asEntity().getEntityWorld()).getThread().execute(() -> {
                 getRigidBody().setCollisionShape(shape);
                 getRigidBody().setMass(type.getMass());
             });
@@ -77,10 +77,10 @@ public abstract class ItemEntityMixin implements PhysicsElement, ItemEntityStora
         doDamage();
     }
 
-//    @Redirect(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/ItemEntity;velocityDirty:Z", ordinal = 1))
-//    public void isVelocityDirty(ItemEntity itemEntity, boolean bl) {
-//        bl = false;
-//    }
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;isSpaceEmpty(Lnet/minecraft/entity/Entity;)Z"))
+    public boolean isSpaceEmpty(World world, Entity entity) {
+        return true;
+    }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V", ordinal = 0))
     public void setVelocityInTick0(ItemEntity itemEntity, Vec3d velocity) { }
@@ -139,7 +139,7 @@ public abstract class ItemEntityMixin implements PhysicsElement, ItemEntityStora
                         entity.damage(DamageSource.GENERIC, p / 20.0f);
 
                         /* Loses 90% of its speed */
-                        Rayon.THREAD.get(asEntity().getEntityWorld()).execute(space ->
+                        Rayon.SPACE.get(asEntity().getEntityWorld()).getThread().execute(() ->
                                 getRigidBody().applyCentralImpulse(getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.1f).multLocal(getRigidBody().getMass())));
                     }
                 }

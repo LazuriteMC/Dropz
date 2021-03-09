@@ -46,7 +46,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             QuaternionHelper.rotateY(orientation, random.nextInt(180));
             QuaternionHelper.rotateZ(orientation, random.nextInt(180));
 
-            Rayon.THREAD.get(world).execute(space -> {
+            Rayon.SPACE.get(world).getThread().execute(() -> {
                 /* Set initial velocity */
                 body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(1.25f));
 
@@ -58,7 +58,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
 
                 /* Multiply velocity by yeet multiplier if player is sneaking */
                 if (isSneaking()) {
-                    Vector3f yeet = new Vector3f(yeetMultiplier,  1 + yeetMultiplier * Math.abs(pitch / 90f), yeetMultiplier);
+                    Vector3f yeet = new Vector3f(yeetMultiplier,  yeetMultiplier, yeetMultiplier);
                     body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(yeet));
                 }
             });
