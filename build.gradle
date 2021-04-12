@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.5-SNAPSHOT'
+	id 'fabric-loom' version '0.7-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -12,6 +12,7 @@ group = project.maven_group
 
 repositories {
 	maven { url 'https://jitpack.io' }
+	maven { url "https://hephaestus.dev/release" }
 }
 
 dependencies {
@@ -25,7 +26,6 @@ dependencies {
 
 	// Rayon
 	modImplementation "com.github.LazuriteMC:Rayon:${project.rayon_version}"
-	include "com.github.LazuriteMC:Rayon:${project.rayon_version}"
 }
 
 processResources {

@@ -3,10 +3,10 @@ package dev.lazurite.dropz.mixin.common;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import dev.lazurite.dropz.util.storage.PlayerEntityStorage;
-import dev.lazurite.rayon.api.element.PhysicsElement;
-import dev.lazurite.rayon.impl.Rayon;
-import dev.lazurite.rayon.impl.bullet.body.ElementRigidBody;
-import dev.lazurite.rayon.impl.util.math.QuaternionHelper;
+import dev.lazurite.rayon.core.api.PhysicsElement;
+import dev.lazurite.rayon.core.impl.physics.PhysicsThread;
+import dev.lazurite.rayon.core.impl.physics.space.body.ElementRigidBody;
+import dev.lazurite.rayon.core.impl.util.math.QuaternionHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -46,7 +46,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
             QuaternionHelper.rotateY(orientation, random.nextInt(180));
             QuaternionHelper.rotateZ(orientation, random.nextInt(180));
 
-            Rayon.SPACE.get(world).getThread().execute(() -> {
+            PhysicsThread.get(world).execute(() -> {
                 /* Set initial velocity */
                 body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(1.25f));
 
