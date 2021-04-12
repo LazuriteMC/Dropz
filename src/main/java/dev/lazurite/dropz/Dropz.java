@@ -2,7 +2,7 @@ package dev.lazurite.dropz;
 
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
 import dev.lazurite.dropz.util.storage.ItemEntityStorage;
-import dev.lazurite.rayon.api.event.ElementCollisionEvents;
+import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.ItemEntity;
 import org.apache.logging.log4j.LogManager;
