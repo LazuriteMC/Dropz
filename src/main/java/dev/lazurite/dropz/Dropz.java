@@ -1,5 +1,6 @@
 package dev.lazurite.dropz;
 
+import dev.lazurite.dropz.config.Config;
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
 import dev.lazurite.dropz.util.storage.ItemEntityStorage;
 import dev.lazurite.rayon.core.api.event.ElementCollisionEvents;
@@ -22,6 +23,7 @@ public class Dropz implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Yeet.");
+		Config.getInstance().load();
 		ElementCollisionEvents.ELEMENT_COLLISION.register(ItemEntityStorage::onCollide);
 	}
 }

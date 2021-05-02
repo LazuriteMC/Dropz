@@ -11,8 +11,10 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	maven { url 'https://jitpack.io' }
+	maven { url "https://jitpack.io" }
 	maven { url "https://hephaestus.dev/release" }
+	maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
 dependencies {
@@ -26,6 +28,17 @@ dependencies {
 
 	// Rayon
 	modImplementation "com.github.LazuriteMC:Rayon:${project.rayon_version}"
+
+	// Mod Menu
+	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+
+	// Fiber
+	modImplementation "me.zeroeightsix:fiber:${project.fiber_version}"
+	include "me.zeroeightsix:fiber:${project.fiber_version}"
+
+	// Cloth Lite
+	modApi "me.shedaniel.cloth:cloth-config-lite-fabric:${project.cloth_lite_version}"
+	include "me.shedaniel.cloth:cloth-config-lite-fabric:${project.cloth_lite_version}"
 }
 
 processResources {

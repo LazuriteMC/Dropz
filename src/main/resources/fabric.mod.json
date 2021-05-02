@@ -17,7 +17,8 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [ "dev.lazurite.dropz.Dropz" ]
+    "main": ["dev.lazurite.dropz.Dropz"],
+    "modmenu": ["dev.lazurite.dropz.config.client.ModMenuCompat"]
   },
 
   "mixins": [ "dropz.mixins.json" ],

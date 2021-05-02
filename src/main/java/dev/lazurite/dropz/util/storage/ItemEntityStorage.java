@@ -1,6 +1,7 @@
 package dev.lazurite.dropz.util.storage;
 
 import dev.lazurite.dropz.Dropz;
+import dev.lazurite.dropz.config.Config;
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
 import dev.lazurite.dropz.mixin.common.access.ItemEntityAccess;
 import dev.lazurite.dropz.util.DropType;
@@ -20,7 +21,7 @@ import java.util.concurrent.Executor;
  */
 public interface ItemEntityStorage {
     static void onCollide(Executor executor, PhysicsElement body1, PhysicsElement body2, float impulse) {
-        if (body1 instanceof ItemEntity && body2 instanceof ItemEntity) {
+        if (Config.getInstance().merge && body1 instanceof ItemEntity && body2 instanceof ItemEntity) {
             ItemEntity item1 = ((ItemEntity) ((EntityPhysicsElement) body1).asEntity());
             ItemEntity item2 = ((ItemEntity) ((EntityPhysicsElement) body2).asEntity());
             World world = item1.getEntityWorld();

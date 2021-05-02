@@ -55,7 +55,6 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
     public void init(EntityType<? extends ItemEntity> type, World world, CallbackInfo info) {
         this.prevItem = getStack().getItem();
         this.type = DropType.get(getStack());
-        this.rigidBody.setAngularDamping(0.4f);
     }
 
     @Inject(
