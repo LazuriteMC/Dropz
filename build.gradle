@@ -7,8 +7,6 @@ version dropz_version
 
 repositories {
 	maven { url 'https://lazurite.dev/releases' }
-	maven { url 'https://jitpack.io' }
-	maven { url 'https://hephaestus.dev/release' }
 	maven { url 'https://maven.shedaniel.me' }
 	maven { url 'https://maven.terraformersmc.com/releases' }
 }
