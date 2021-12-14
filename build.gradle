@@ -1,89 +1,87 @@
 plugins {
-	id 'fabric-loom' version '0.7-SNAPSHOT'
+	id 'fabric-loom' version "$loom_version"
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
+version dropz_version
 
 repositories {
-	maven { url "https://jitpack.io" }
-	maven { url "https://hephaestus.dev/release" }
-	maven { url "https://maven.shedaniel.me/" }
-	maven { url "https://maven.terraformersmc.com/releases/" }
+	maven { url 'https://lazurite.dev/releases' }
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://hephaestus.dev/release' }
+	maven { url 'https://maven.shedaniel.me' }
+	maven { url 'https://maven.terraformersmc.com/releases' }
 }
 
 dependencies {
-	// Minecraft + Yarn
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	minecraft "com.mojang:minecraft:$minecraft_version"
+	mappings loom.officialMojangMappings()
 
 	// Fabric
-	modCompile "net.fabricmc:fabric-loader:${project.loader_version}"
-	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+	// TODO modules
+	modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
 
 	// Rayon
-	modImplementation "com.github.LazuriteMC:Rayon:${project.rayon_version}"
+	modImplementation "dev.lazurite:rayon-fabric:$rayon_version"
 
 	// Mod Menu
-	modImplementation "com.terraformersmc:modmenu:${project.mod_menu_version}"
+	modImplementation "com.terraformersmc:modmenu:$modmenu_version"
 
 	// Fiber
-	modImplementation "me.zeroeightsix:fiber:${project.fiber_version}"
-	include "me.zeroeightsix:fiber:${project.fiber_version}"
+	modImplementation "me.zeroeightsix:fiber:$fiber_version"
+	include "me.zeroeightsix:fiber:$fiber_version"
 
 	// Cloth Lite
-	modApi "me.shedaniel.cloth:cloth-config-lite-fabric:${project.cloth_lite_version}"
-	include "me.shedaniel.cloth:cloth-config-lite-fabric:${project.cloth_lite_version}"
+	modImplementation "me.shedaniel.cloth:cloth-config-lite-fabric:$cloth_lite_version"
+	include "me.shedaniel.cloth:cloth-config-lite-fabric:$cloth_lite_version"
 }
 
-processResources {
-	inputs.property "version", project.version
-
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
-		expand "version": project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
-	}
-}
-
-tasks.withType(JavaCompile) {
-	options.encoding = "UTF-8"
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = "sources"
-	from sourceSets.main.allSource
+java {
+	toolchain.languageVersion = JavaLanguageVersion.of min_java_version
+	withSourcesJar()
 }
 
 jar {
-	from "LICENSE"
+	from 'LICENSE'
 }
 
-remapJar {
+tasks.withType ProcessResources, {
+	inputs.properties(
+			'version': project.version,
 
+			'min_java_version': min_java_version,
+			'min_minecraft_version': min_minecraft_version,
+			'min_fabric_loader_version': min_fabric_loader_version
+	)
+
+	filesMatching 'fabric.mod.json', {
+		expand(
+				'version': project.version,
+
+				'min_java_version': min_java_version,
+				'min_minecraft_version': min_minecraft_version,
+				'min_fabric_loader_version': min_fabric_loader_version
+		)
+	}
 }
 
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
+	repositories {
+		maven {
+			name 'Lazurite'
+			url 'https://lazurite.dev/releases'
+
+			credentials {
+				username property('publish.lazurite.alias')
+				password property('publish.lazurite.secret')
 			}
 		}
 	}
 
-	repositories {
-		 mavenLocal()
+	publications {
+		dropz MavenPublication, {
+			from components.java
+		}
 	}
 }
