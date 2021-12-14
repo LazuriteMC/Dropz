@@ -50,7 +50,9 @@ tasks.withType ProcessResources, {
 
 			'min_java_version': min_java_version,
 			'min_minecraft_version': min_minecraft_version,
-			'min_fabric_loader_version': min_fabric_loader_version
+			'min_fabric_loader_version': min_fabric_loader_version,
+			'min_fabric_api_version': min_fabric_api_version,
+			'min_rayon_version': min_rayon_version
 	)
 
 	filesMatching 'fabric.mod.json', {
@@ -59,7 +61,9 @@ tasks.withType ProcessResources, {
 
 				'min_java_version': min_java_version,
 				'min_minecraft_version': min_minecraft_version,
-				'min_fabric_loader_version': min_fabric_loader_version
+				'min_fabric_loader_version': min_fabric_loader_version,
+				'min_fabric_api_version': min_fabric_api_version,
+				'min_rayon_version': min_rayon_version
 		)
 	}
 }

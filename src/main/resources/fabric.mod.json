@@ -1,8 +1,29 @@
 {
   "schemaVersion": 1,
   "id": "dropz",
-  "version": "${version}",
-
+  "version": "$version",
+  "environment": "*",
+  "entrypoints": {
+    "main": [ "dev.lazurite.dropz.Dropz" ],
+    "modmenu": [ "dev.lazurite.dropz.config.client.ModMenuCompat" ]
+  },
+  "mixins": [
+    {
+      "config": "dropz.common.mixins.json",
+      "environment": "*"
+    },
+    {
+      "config": "dropz.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "java": "$min_java_version",
+    "minecraft": "$min_minecraft_version",
+    "fabricloader": "$min_fabric_loader_version",
+    "fabric": "$min_fabric_api_version",
+    "rayon": "$min_rayon_version"
+  },
   "name": "Dropz",
   "description": "Dynamic item drops for Fabric.",
   "authors": [ "The Lazurite Team" ],
@@ -11,34 +32,13 @@
     "sources": "https://github.com/lazuritemc/dropz",
     "issues": "https://github.com/lazuritemc/dropz/issues"
   },
-
   "license": "MIT",
   "icon": "assets/dropz/icon.png",
-
-  "environment": "*",
-  "entrypoints": {
-    "main": ["dev.lazurite.dropz.Dropz"],
-    "modmenu": ["dev.lazurite.dropz.config.client.ModMenuCompat"]
-  },
-
-  "mixins": [ "dropz.mixins.json" ],
-
-  "depends": {
-    "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x"
-  },
-
-  "suggests": {
-    "flamingo": "*"
-  },
-
   "custom": {
     "modmenu": {
-      "links": { "modmenu.discord": "https://discord.gg/NNPPHN7b3P" }
-    },
-    "vanguard": {
-      "curse-project-id": "439696"
+      "links": {
+        "modmenu.discord": "https://discord.gg/NNPPHN7b3P"
+      }
     }
   }
 }

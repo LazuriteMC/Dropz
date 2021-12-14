@@ -2,15 +2,12 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.lazurite.dropz.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "common.access.ItemEntityAccess",
     "common.EntityMixin",
     "common.ItemEntityMixin",
     "common.PlayerEntityMixin"
-  ],
-  "client": [
-    "client.ItemEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
