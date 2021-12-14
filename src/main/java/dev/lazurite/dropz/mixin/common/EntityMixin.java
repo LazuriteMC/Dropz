@@ -1,11 +1,9 @@
 package dev.lazurite.dropz.mixin.common;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,30 +12,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-    @Environment(EnvType.CLIENT)
-    @Inject(method = "shouldRender(D)Z", at = @At("HEAD"), cancellable = true)
-    public void shouldRender(double distance, CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = "shouldRenderAtSqrDistance", at = @At("HEAD"), cancellable = true)
+    public void shouldRenderAtSqrDistance_HEAD(double distance, CallbackInfoReturnable<Boolean> info) {
         if (((Entity) (Object) this) instanceof ItemEntity) {
             info.setReturnValue(true);
         }
     }
 
-    @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)
-    public void pushOutOfBlocks(double x, double y, double z, CallbackInfo info) {
+    @Inject(method = "moveTowardsClosestSpace", at = @At("HEAD"), cancellable = true)
+    public void moveTowardsClosestSpace_HEAD(double x, double y, double z, CallbackInfo info) {
         if (((Entity) (Object) this) instanceof ItemEntity) {
             info.cancel();
         }
     }
 
-    @Inject(method = "updateWaterState", at = @At("HEAD"), cancellable = true)
-    public void updateWaterState(CallbackInfoReturnable<Boolean> info) {
+    @Inject(method = "updateInWaterStateAndDoFluidPushing", at = @At("HEAD"), cancellable = true)
+    public void updateInWaterStateAndDoFluidPushing_HEAD(CallbackInfoReturnable<Boolean> info) {
         if (((Entity) (Object) this) instanceof ItemEntity) {
             info.cancel();
         }
     }
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
-    public void move(MovementType type, Vec3d movement, CallbackInfo info) {
+    public void move_HEAD(MoverType moverType, Vec3 vec3, CallbackInfo info) {
         if (((Entity) (Object) this) instanceof ItemEntity) {
             info.cancel();
         }

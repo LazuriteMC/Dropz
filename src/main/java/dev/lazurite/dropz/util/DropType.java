@@ -2,11 +2,11 @@ package dev.lazurite.dropz.util;
 
 import dev.lazurite.dropz.mixin.client.ItemEntityRendererMixin;
 import dev.lazurite.dropz.mixin.common.ItemEntityMixin;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Mainly for handling bounding box information for specific types of items and blocks.
@@ -16,32 +16,32 @@ import net.minecraft.util.registry.Registry;
  * @see ItemEntityMixin
  */
 public enum DropType {
-    ITEM(new Box(-0.25, -0.25, -0.03, 0.25, 0.25, 0.03), 1.0f, 0.1125f),
-    BLOCK(new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15), 2.0f, 0.1875f),
+    ITEM(new AABB(-0.25, -0.25, -0.03, 0.25, 0.25, 0.03), 1.0f, 0.1125f),
+    BLOCK(new AABB(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15), 2.0f, 0.1875f),
 
     /* Special */
-    DOOR(new Box(-0.15, -0.25, -0.04, 0.15, 0.25, 0.06), 2.5f, 0.125f),
-    HEAD(new Box(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15), 2.0f, 0.07f),
-    DRAGON(new Box(-0.2, -0.2, -0.4, 0.2, 0.2, 0.4), 3.0f, 0.0875f),
-    BED(new Box(-0.15, -0.1, -0.25, 0.15, 0.1, 0.25), 3.0f, 0.0f),
-    SLAB(new Box(-0.15, -0.075, -0.15, 0.15, 0.075, 0.15), 1.0f, 0.125f),
-    FENCE(new Box(-0.085, -0.15, -0.15, 0.085, 0.15, 0.15), 1.5f, 0.1875f),
-    TRAP(new Box(-0.15, -0.05, -0.15, 0.15, 0.05, 0.15), 1.5f, 0.0875f),
-    PLATE(new Box(-0.15, -0.05, -0.15, 0.15, 0.05, 0.15), 1.5f, 0.07f),
-    BUTTON(new Box(-0.075, -0.05, -0.05, 0.075, 0.05, 0.05), 0.25f, 0.1875f);
+    DOOR(new AABB(-0.15, -0.25, -0.04, 0.15, 0.25, 0.06), 2.5f, 0.125f),
+    HEAD(new AABB(-0.15, -0.15, -0.15, 0.15, 0.15, 0.15), 2.0f, 0.07f),
+    DRAGON(new AABB(-0.2, -0.2, -0.4, 0.2, 0.2, 0.4), 3.0f, 0.0875f),
+    BED(new AABB(-0.15, -0.1, -0.25, 0.15, 0.1, 0.25), 3.0f, 0.0f),
+    SLAB(new AABB(-0.15, -0.075, -0.15, 0.15, 0.075, 0.15), 1.0f, 0.125f),
+    FENCE(new AABB(-0.085, -0.15, -0.15, 0.085, 0.15, 0.15), 1.5f, 0.1875f),
+    TRAP(new AABB(-0.15, -0.05, -0.15, 0.15, 0.05, 0.15), 1.5f, 0.0875f),
+    PLATE(new AABB(-0.15, -0.05, -0.15, 0.15, 0.05, 0.15), 1.5f, 0.07f),
+    BUTTON(new AABB(-0.075, -0.05, -0.05, 0.075, 0.05, 0.05), 0.25f, 0.1875f);
 
-    private final Box box;
+    private final AABB aabb;
     private final float mass;
     private final float offset;
 
-    DropType(Box box, float mass, float offset) {
-        this.box = box;
+    DropType(AABB aabb, float mass, float offset) {
+        this.aabb = aabb;
         this.mass = mass;
         this.offset = offset;
     }
 
-    public Box getBox() {
-        return this.box;
+    public AABB getAabb() {
+        return this.aabb;
     }
 
     public float getMass() {
@@ -53,10 +53,10 @@ public enum DropType {
     }
 
     public static DropType get(ItemStack stack) {
-        Block block = Registry.BLOCK.get(Registry.ITEM.getId(stack.getItem()));
+        Block block = Registry.BLOCK.get(Registry.ITEM.getKey(stack.getItem()));
 
-        if (block != Blocks.AIR && !block.canMobSpawnInside()) {
-            String key = block.getTranslationKey();
+        if (block != Blocks.AIR && !block.isPossibleToRespawnInThis()) {
+            String key = block.getDescriptionId();
 
             if (key.contains("fence") || key.contains("wall")) {
                 return FENCE;
@@ -74,7 +74,7 @@ public enum DropType {
                 return BLOCK;
             }
         } else {
-            String key = stack.getItem().getTranslationKey();
+            String key = stack.getItem().getDescriptionId();
 
             if (key.contains("pressure") || key.contains("carpet") || key.equals("minecraft:snow")) {
                 return PLATE;
