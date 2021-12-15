@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Mainly for handling bounding box information for specific types of items and blocks.
+ * Mainly for handling bounding AABB information for specific types of items and blocks.
  * Most items and blocks will fall into the {@link DropType#ITEM} or {@link DropType#BLOCK}
  * category. The rest are handled based on the output of {@link DropType#get(ItemStack)}.
  * @see ItemEntityRendererMixin
@@ -40,7 +40,7 @@ public enum DropType {
         this.offset = offset;
     }
 
-    public AABB getAabb() {
+    public AABB getAABB() {
         return this.aabb;
     }
 

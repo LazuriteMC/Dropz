@@ -71,7 +71,7 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
         if (!getItem().getItem().equals(prevItem)) {
             this.type = DropType.get(getItem());
             this.prevItem = getItem().getItem();
-            CollisionShape shape = MinecraftShape.of(type.getAabb());
+            CollisionShape shape = MinecraftShape.of(type.getAABB());
 
             MinecraftSpace.get(this.getLevel()).getWorkerThread().execute(() -> {
                 getRigidBody().setCollisionShape(shape);

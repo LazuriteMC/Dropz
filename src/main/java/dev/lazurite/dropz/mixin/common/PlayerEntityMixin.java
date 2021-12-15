@@ -1,7 +1,7 @@
 package dev.lazurite.dropz.mixin.common;
 
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.mojang.math.Quaternion;
 import dev.lazurite.dropz.config.Config;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
@@ -42,11 +42,11 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             ElementRigidBody body = ((PhysicsElement) entity).getRigidBody();
 
             // Set the rotation
-            Quaternion orientation = new Quaternion();
-            QuaternionHelper.rotateX(Convert.toMinecraft(orientation), random.nextInt(180));
-            QuaternionHelper.rotateY(Convert.toMinecraft(orientation), random.nextInt(180));
-            QuaternionHelper.rotateZ(Convert.toMinecraft(orientation), random.nextInt(180));
-            body.setPhysicsRotation(orientation);
+            Quaternion orientation = new Quaternion(Quaternion.ONE);
+            QuaternionHelper.rotateX(orientation, random.nextInt(180));
+            QuaternionHelper.rotateY(orientation, random.nextInt(180));
+            QuaternionHelper.rotateZ(orientation, random.nextInt(180));
+            body.setPhysicsRotation(Convert.toBullet(orientation));
 
             // Set the linear and angular velocities
             body.setLinearVelocity(Convert.toBullet(getViewVector(1.0f).scale(1.5)));
