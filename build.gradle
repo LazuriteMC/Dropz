@@ -7,62 +7,36 @@ version dropz_version
 
 repositories {
 	maven { url 'https://lazurite.dev/releases' }
-	maven { url 'https://maven.shedaniel.me' }
-	maven { url 'https://maven.terraformersmc.com/releases' }
 }
 
 dependencies {
 	minecraft "com.mojang:minecraft:$minecraft_version"
 	mappings loom.officialMojangMappings()
-
-	// Fabric
 	modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
-	// TODO modules
-	modImplementation "net.fabricmc.fabric-api:fabric-api:$fabric_api_version"
-
-	// Rayon
 	modImplementation "dev.lazurite:rayon-fabric:$rayon_version"
-
-	// Mod Menu
-	modImplementation "com.terraformersmc:modmenu:$modmenu_version"
-
-	// Fiber
-	modImplementation "me.zeroeightsix:fiber:$fiber_version"
-	include "me.zeroeightsix:fiber:$fiber_version"
-
-	// Cloth Lite
-	modImplementation "me.shedaniel.cloth:cloth-config-lite-fabric:$cloth_lite_version"
-	include "me.shedaniel.cloth:cloth-config-lite-fabric:$cloth_lite_version"
 }
 
 java {
-	toolchain.languageVersion = JavaLanguageVersion.of min_java_version
-	withSourcesJar()
-}
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 
-jar {
-	from 'LICENSE'
+	withSourcesJar()
 }
 
 tasks.withType ProcessResources, {
 	inputs.properties(
 			'version': project.version,
-
-			'min_java_version': min_java_version,
 			'min_minecraft_version': min_minecraft_version,
 			'min_fabric_loader_version': min_fabric_loader_version,
-			'min_fabric_api_version': min_fabric_api_version,
 			'min_rayon_version': min_rayon_version
 	)
 
 	filesMatching 'fabric.mod.json', {
 		expand(
 				'version': project.version,
-
-				'min_java_version': min_java_version,
 				'min_minecraft_version': min_minecraft_version,
 				'min_fabric_loader_version': min_fabric_loader_version,
-				'min_fabric_api_version': min_fabric_api_version,
 				'min_rayon_version': min_rayon_version
 		)
 	}

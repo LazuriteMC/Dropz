@@ -1,19 +1,12 @@
 package dev.lazurite.dropz.mixin.common;
 
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.math.Vector3f;
-import dev.lazurite.dropz.util.DropType;
-import dev.lazurite.dropz.util.storage.ItemEntityStorage;
-import dev.lazurite.dropz.Dropz;
+import dev.lazurite.dropz.util.ShapeGenerator;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
-import dev.lazurite.rayon.impl.bullet.collision.body.entity.EntityRigidBody;
-import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
-import dev.lazurite.rayon.impl.bullet.collision.space.MinecraftSpace;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.world.damagesource.DamageSource;
+import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
+import dev.lazurite.transporter.api.pattern.Pattern;
+import dev.lazurite.transporter.impl.Transporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +14,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,32 +23,18 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.UUID;
-
-/**
- * This is basically a rewrite of most of {@link ItemEntity}'s
- * functionality. It changes what happens when it ticks and when
- * it's spawned into the world.
- * @see ItemEntityStorage
- * @see Dropz
- */
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixin extends Entity implements EntityPhysicsElement, ItemEntityStorage {
+public abstract class ItemEntityMixin implements EntityPhysicsElement {
     @Unique private final EntityRigidBody rigidBody = new EntityRigidBody(this);
     @Unique private Item prevItem = Items.AIR;
-    @Unique private DropType type = DropType.ITEM;
+    @Unique private Pattern prevPattern;
 
     @Shadow public abstract ItemStack getItem();
-    @Shadow @Nullable public abstract UUID getThrower();
-
-    public ItemEntityMixin(EntityType<?> type, Level level) {
-        super(type, level);
-    }
 
     @Inject(at = @At("RETURN"), method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V")
     public void init_RETURN(EntityType<? extends ItemEntity> type, Level level, CallbackInfo info) {
         this.prevItem = getItem().getItem();
-        this.type = DropType.get(getItem());
+        this.rigidBody.setMass(5f);
     }
 
     @Inject(
@@ -68,20 +46,23 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
             )
     )
     public void tick_tick(CallbackInfo info) {
-        if (!getItem().getItem().equals(prevItem)) {
-            this.type = DropType.get(getItem());
-            this.prevItem = getItem().getItem();
-            CollisionShape shape = MinecraftShape.of(type.getAABB());
+        final var thisEntity = (ItemEntity) (Object) this;
 
-            MinecraftSpace.get(this.getLevel()).getWorkerThread().execute(() -> {
-                getRigidBody().setCollisionShape(shape);
-                getRigidBody().setMass(type.getMass());
-            });
+        if (!thisEntity.level.isClientSide) {
+            final var pattern = Transporter.getPatternBuffer().getItem(Item.getId(getItem().getItem()));
+
+            if (pattern != prevPattern) {
+                this.prevPattern = pattern;
+                rigidBody.setCollisionShape(ShapeGenerator.create((ItemEntity) (Object) this));
+            }
         }
 
-        doDamage();
-        Vector3f location = getRigidBody().getPhysicsLocation(new Vector3f());
-        this.absMoveTo(location.x, location.y + getBoundingBox().getYsize() * 0.5, location.z);
+        if (!getItem().getItem().equals(prevItem)) {
+            this.prevItem = getItem().getItem();
+
+            // Item has changed, create a new shape
+            rigidBody.setCollisionShape(ShapeGenerator.create((ItemEntity) (Object) this));
+        }
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z"))
@@ -90,7 +71,9 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/ItemEntity;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
-    public void tick_setDeltaMovement(ItemEntity itemEntity, Vec3 vec3) { }
+    public void tick_setDeltaMovement(ItemEntity itemEntity, Vec3 vec3) {
+
+    }
 
     @Inject(method = "getSpin", at = @At("HEAD"), cancellable = true)
     public void getSpin_HEAD(float f, CallbackInfoReturnable<Float> info) {
@@ -103,7 +86,7 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
     }
 
     @Inject(method = "setUnderwaterMovement", at = @At("HEAD"), cancellable = true)
-    public void setunderwaterMovement_HEAD(CallbackInfo info) {
+    public void setUnderwaterMovement_HEAD(CallbackInfo info) {
         info.cancel();
     }
 
@@ -112,40 +95,30 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
        info.cancel();
     }
 
-    @Inject(method = "getAddEntityPacket", at = @At("HEAD"), cancellable = true)
-    public void getAddEntityPacket_HEAD(CallbackInfoReturnable<Packet<?>> info) {
-        //info.setReturnValue(getSpawnPacket()); // TODO
-    }
-
-    @Override
-    public DropType getDropType() {
-        return this.type;
-    }
-
     @Override
     public EntityRigidBody getRigidBody() {
         return this.rigidBody;
     }
 
-    private void doDamage() {
-        /* Momentum */
-        float p = getRigidBody().getLinearVelocity(new Vector3f()).length() * getRigidBody().getMass();
-
-        /* Velocity */
-        float v = getRigidBody().getLinearVelocity(new Vector3f()).length();
-
-        if (v >= 15) {
-            for (Entity entity : this.getLevel().getEntities(((ItemEntity) (Object) this), this.getBoundingBox(), (entity) -> entity instanceof LivingEntity)) {
-                if (getThrower() != null) {
-                    if (!entity.equals(this.getLevel().getPlayerByUUID(getThrower()))) {
-                        entity.hurt(DamageSource.GENERIC, p / 20.0f);
-
-                        /* Loses 90% of its speed */
-                        MinecraftSpace.get(this.getLevel()).getWorkerThread().execute(() ->
-                                getRigidBody().applyCentralImpulse(getRigidBody().getLinearVelocity(new Vector3f()).multLocal(0.1f).multLocal(getRigidBody().getMass())));
-                    }
-                }
-            }
-        }
-    }
+    // TODO monka
+//    private void doDamage() {
+//        final var p = getRigidBody().getLinearVelocity(new Vector3f()).length() * getRigidBody().getMass();
+//        final var v = getRigidBody().getLinearVelocity(new Vector3f()).length();
+//        final var level = thisEntity.getLevel();
+//        final var box = thisEntity.getBoundingBox();
+//
+//        if (v >= 15) {
+//            for (Entity entity : level.getEntities(((ItemEntity) (Object) this), box, (entity) -> entity instanceof LivingEntity)) {
+//                if (getThrower() != null) {
+//                    if (!entity.equals(level.getPlayerByUUID(getThrower()))) {
+//                        entity.hurt(DamageSource.GENERIC, p / 20.0f);
+//
+//                        /* Loses 90% of its speed */
+//                        final var linearVelocity = rigidBody.getLinearVelocity(new Vector3f());
+//                        rigidBody.applyCentralImpulse(linearVelocity.multLocal(0.1f * rigidBody.getMass()));
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

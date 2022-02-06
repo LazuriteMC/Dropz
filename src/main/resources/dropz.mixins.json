@@ -9,6 +9,9 @@
     "common.ItemEntityMixin",
     "common.PlayerEntityMixin"
   ],
+  "client": [
+    "client.ItemEntityRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
