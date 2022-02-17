@@ -2,9 +2,11 @@ package dev.lazurite.dropz.mixin.common;
 
 import com.jme3.bounding.BoundingBox;
 import dev.lazurite.dropz.Dropz;
-import dev.lazurite.dropz.util.ShapeGenerator;
-import dev.lazurite.dropz.util.storage.ItemStorage;
+import dev.lazurite.dropz.util.Config;
+import dev.lazurite.dropz.physics.ShapeGenerator;
+import dev.lazurite.dropz.util.ItemStorage;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
+import dev.lazurite.rayon.impl.bullet.collision.body.ElementRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.EntityRigidBody;
 import dev.lazurite.rayon.impl.bullet.collision.body.shape.MinecraftShape;
 import dev.lazurite.transporter.api.pattern.Pattern;
@@ -56,6 +58,10 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
     @Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"))
     public void init_RETURN(EntityType<? extends ItemEntity> type, Level level, CallbackInfo info) {
         this.rigidBody.setMass(2.5f);
+
+        if (!Config.getInstance().doBuoyancy) {
+            this.rigidBody.setBuoyancyType(ElementRigidBody.BuoyancyType.NONE);
+        }
     }
 
     /**

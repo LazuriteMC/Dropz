@@ -1,7 +1,7 @@
 package dev.lazurite.dropz.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.lazurite.dropz.util.storage.ItemStorage;
+import dev.lazurite.dropz.util.ItemStorage;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
 import net.fabricmc.api.EnvType;

@@ -1,4 +1,4 @@
-package dev.lazurite.dropz.util;
+package dev.lazurite.dropz.physics;
 
 import com.jme3.bounding.BoundingBox;
 import com.jme3.math.Vector3f;
@@ -15,13 +15,13 @@ import net.minecraft.world.phys.AABB;
 public class ShapeGenerator {
     public static BoundingBox create(ItemEntity itemEntity) {
         if (itemEntity.getItem().getItem() instanceof BlockItem) {
-            return getPatternShape(itemEntity);
+            return getRoughPatternShape(itemEntity);
         }
 
         return Convert.toBullet(new AABB(-0.2, -0.2, -0.025, 0.2, 0.2, 0.025));
     }
 
-    public static BoundingBox getPatternShape(ItemEntity itemEntity) {
+    public static BoundingBox getRoughPatternShape(ItemEntity itemEntity) {
         final var level = itemEntity.getLevel();
         final var itemStack = itemEntity.getItem();
         final Pattern pattern;
@@ -35,11 +35,13 @@ public class ShapeGenerator {
         if (pattern != null) {
             final var min = new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
             final var max = new Vector3f(Float.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+
             final var points = pattern.getQuads().stream()
                     .flatMap(quad -> quad.getPoints().stream())
                     .map(Convert::toBullet)
                     .toList();
 
+            // Find min and max points in the pattern
             for (var point : points) {
                 if (point.x <= min.x && point.y <= min.y && point.z <= min.z) {
                     min.set(point);
@@ -50,12 +52,13 @@ public class ShapeGenerator {
                 }
             }
 
-            final var boundingBox = new AABB(
+            final var boundingBox = Convert.toBullet(new AABB(
                     VectorHelper.toVec3(Convert.toMinecraft(min)),
-                    VectorHelper.toVec3(Convert.toMinecraft(max)));
-
-            // Pattern shape based
-            return Convert.toBullet(boundingBox.contract(boundingBox.getXsize() * 0.2f, boundingBox.getYsize() * 0.2f, boundingBox.getZsize() * 0.2f));
+                    VectorHelper.toVec3(Convert.toMinecraft(max))));
+            boundingBox.setXExtent(0.9f * boundingBox.getXExtent());
+            boundingBox.setYExtent(0.9f * boundingBox.getYExtent());
+            boundingBox.setZExtent(0.9f * boundingBox.getZExtent());
+            return boundingBox;
         }
 
         return null;
