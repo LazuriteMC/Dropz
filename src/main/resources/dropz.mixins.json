@@ -4,10 +4,9 @@
   "package": "dev.lazurite.dropz.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "common.access.ItemEntityAccess",
-    "common.EntityMixin",
     "common.ItemEntityMixin",
-    "common.PlayerEntityMixin"
+    "common.PlayerMixin",
+    "common.access.ItemEntityAccess"
   ],
   "client": [
     "client.ItemEntityRendererMixin"

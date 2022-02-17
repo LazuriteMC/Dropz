@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * <b><i>yeet</i></b> the newly created {@link ItemEntity}.
  */
 @Mixin(Player.class)
-public abstract class PlayerEntityMixin {
+public abstract class PlayerMixin {
     @Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("RETURN"), cancellable = true)
     public void drop_RETURN(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
         final var player = (Player) (Object) this;
@@ -41,15 +41,17 @@ public abstract class PlayerEntityMixin {
             body.setPhysicsRotation(Convert.toBullet(rotation));
 
             // Set the linear and angular velocities
-            body.setLinearVelocity(Convert.toBullet(lookDirection.scale(2.0)));
+            final var motionDir = player.getMotionDirection();
+            final var playerVelocity = new Vector3f(motionDir.getStepX(), motionDir.getStepY(), motionDir.getStepZ()).multLocal(player.getScore());
+            body.setLinearVelocity(Convert.toBullet(lookDirection.scale(2.0)).add(playerVelocity));
             body.setAngularVelocity(new Vector3f(random.nextInt(8) - 4, random.nextInt(8) - 4, random.nextInt(8) - 4));
 
             /* Multiply velocity by yeet multiplier if player is sneaking */
-            if (player.isShiftKeyDown()) {
-                final var yeetMultiplier = 2.0f;
-                Vector3f yeet = new Vector3f(yeetMultiplier, yeetMultiplier, yeetMultiplier);
-                body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(yeet));
-            }
+//            if (player.isShiftKeyDown()) {
+//                final var yeetMultiplier = 2.0f;
+//                Vector3f yeet = new Vector3f(yeetMultiplier, yeetMultiplier, yeetMultiplier);
+//                body.setLinearVelocity(body.getLinearVelocity(new Vector3f()).multLocal(yeet));
+//            }
         }
     }
 }
