@@ -19,10 +19,12 @@ public final class Config {
     private static final Config instance = new Config();
     private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve(Dropz.modid + ".json");
 
+    @Setting public float yeetMultiplier;
     @Setting public boolean doItemCombination;
     @Setting public boolean doBuoyancy;
 
     private Config() {
+        this.yeetMultiplier = 1.0f;
         this.doItemCombination = true;
         this.doBuoyancy = true;
     }
