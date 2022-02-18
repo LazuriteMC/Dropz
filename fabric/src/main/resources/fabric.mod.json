@@ -4,7 +4,7 @@
   "version": "$version",
 
   "entrypoints": {
-    "main": [ "dev.lazurite.dropz.Dropz" ]
+    "main": [ "dev.lazurite.dropz.fabric.DropzFabric" ]
   },
 
   "license": "MIT",
@@ -13,13 +13,13 @@
   "mixins": [ "dropz.mixins.json" ],
 
   "depends": {
-    "minecraft": "$min_minecraft_version",
-    "fabricloader": "$min_fabric_loader_version",
-    "rayon": "$min_rayon_version"
+    "minecraft": ">=1.18.1",
+    "fabricloader": "*",
+    "rayon": ">=1.5.6"
   },
 
   "name": "Dropz",
-  "description": "Dynamic item drops for Fabric.",
+  "description": "Dynamic item drops in Minecraft.",
   "authors": [ "The Lazurite Team" ],
   "contact": {
     "homepage": "https://lazurite.dev",

@@ -1,0 +1,55 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version "$shadow_version"
+}
+
+loom.forge.mixinConfig 'dropz.mixins.json'
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+configurations {
+    common
+    shadowCommon
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    modApi("dev.lazurite:rayon-forge:$rayon_version")
+    common("me.zeroeightsix:fiber:$fiber_version")
+
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
+    shadowCommon("me.zeroeightsix:fiber:$fiber_version")
+}
+
+tasks.withType(ProcessResources) {
+    inputs.property "version", version
+
+    filesMatching "META-INF/mods.toml", {
+        expand "version": version
+    }
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}

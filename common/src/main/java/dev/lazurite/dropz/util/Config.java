@@ -1,6 +1,6 @@
 package dev.lazurite.dropz.util;
 
-import dev.lazurite.dropz.Dropz;
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
 import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
@@ -8,7 +8,6 @@ import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
 import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
 import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +16,6 @@ import java.nio.file.Path;
 @Settings(onlyAnnotated = true)
 public final class Config {
     private static final Config instance = new Config();
-    private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve(Dropz.modid + ".json");
 
     @Setting public float yeetMultiplier;
     @Setting public boolean doItemCombination;
@@ -33,12 +31,19 @@ public final class Config {
         return instance;
     }
 
+    @ExpectPlatform
+    public static Path getPath() {
+        throw new AssertionError();
+    }
+
     public void load() {
-        if (Files.exists(PATH)) {
+        final var path = getPath();
+
+        if (Files.exists(path)) {
             try {
                 FiberSerialization.deserialize(
                         ConfigTree.builder().applyFromPojo(instance, AnnotatedSettings.builder().build()).build(),
-                        Files.newInputStream(PATH),
+                        Files.newInputStream(path),
                         new JanksonValueSerializer(false)
                 );
             } catch (IOException | FiberException e) {
@@ -48,7 +53,7 @@ public final class Config {
             try {
                 FiberSerialization.serialize(
                         ConfigTree.builder().applyFromPojo(instance, AnnotatedSettings.builder().build()).build(),
-                        Files.newOutputStream(PATH),
+                        Files.newOutputStream(path),
                         new JanksonValueSerializer(false)
                 );
             } catch (IOException e) {

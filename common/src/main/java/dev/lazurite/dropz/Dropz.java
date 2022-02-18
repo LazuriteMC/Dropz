@@ -4,17 +4,15 @@ import dev.lazurite.dropz.util.Config;
 import dev.lazurite.dropz.mixin.common.access.ItemEntityAccess;
 import dev.lazurite.rayon.api.PhysicsElement;
 import dev.lazurite.rayon.api.event.collision.ElementCollisionEvents;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Dropz implements ModInitializer {
-	public static final String modid = "dropz";
+public class Dropz {
+	public static final String MODID = "dropz";
 	public static final Logger LOGGER = LogManager.getLogger("Dropz");
 
-	@Override
-	public void onInitialize() {
+	public static void initialize() {
 		LOGGER.info("Yeet.");
 		Config.getInstance().load();
 		ElementCollisionEvents.ELEMENT_COLLISION.register(Dropz::onCollision);

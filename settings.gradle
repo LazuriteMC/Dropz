@@ -5,8 +5,20 @@ pluginManagement {
             url 'https://maven.fabricmc.net/'
         }
 
+        maven {
+            name 'Forge'
+            url 'https://maven.minecraftforge.net/'
+        }
+
+        maven {
+            name 'Architectury'
+            url 'https://maven.architectury.dev/'
+        }
+
         gradlePluginPortal()
     }
 }
 
 rootProject.name = 'dropz'
+
+include 'common', 'fabric', 'forge'

@@ -1,72 +1,61 @@
 plugins {
-	id 'fabric-loom' version "$loom_version"
-	id 'maven-publish'
+	id 'architectury-plugin' version "$architectury_plugin_version"
+	id 'dev.architectury.loom' version "$loom_version" apply false
+	id 'java'
 }
 
-version dropz_version
-
-repositories {
-	maven { url 'https://lazurite.dev/releases' }
-	maven { url 'https://maven.modmuss50.me' }
+architectury {
+	minecraft = rootProject.minecraft_version
 }
 
-dependencies {
-	minecraft "com.mojang:minecraft:$minecraft_version"
-	mappings loom.officialMojangMappings()
+subprojects {
+	apply plugin: 'dev.architectury.loom'
+	apply plugin: 'architectury-plugin'
+	apply plugin: 'maven-publish'
 
-	// Fabric
-	modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
+	version dropz_version
+	group maven_group
 
-	// Rayon
-	modImplementation "dev.lazurite:rayon-fabric:$rayon_version"
+	archivesBaseName = rootProject.archivesBaseName + '-' + name
+	loom.silentMojangMappingsLicense()
 
-	// Fiber
-	modImplementation "me.zeroeightsix:fiber:$fiber_version"
-	include "me.zeroeightsix:fiber:$fiber_version"
-}
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-
-	withSourcesJar()
-}
-
-tasks.withType ProcessResources, {
-	inputs.properties(
-			'version': project.version,
-			'min_minecraft_version': min_minecraft_version,
-			'min_fabric_loader_version': min_fabric_loader_version,
-			'min_rayon_version': min_rayon_version
-	)
-
-	filesMatching 'fabric.mod.json', {
-		expand(
-				'version': project.version,
-				'min_minecraft_version': min_minecraft_version,
-				'min_fabric_loader_version': min_fabric_loader_version,
-				'min_rayon_version': min_rayon_version
-		)
-	}
-}
-
-publishing {
 	repositories {
-		maven {
-			name 'Lazurite'
-			url 'https://lazurite.dev/releases'
+		maven { url 'https://lazurite.dev/releases' }
+		maven { url 'https://maven.modmuss50.me' }
+	}
 
-			credentials {
-				username property('publish.lazurite.alias')
-				password property('publish.lazurite.secret')
+	dependencies {
+		minecraft "com.mojang:minecraft:$minecraft_version"
+		mappings loom.officialMojangMappings()
+	}
+
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(17)
+		}
+
+		withSourcesJar()
+	}
+
+
+	publishing {
+		repositories {
+			maven {
+				name 'Lazurite'
+				url 'https://lazurite.dev/releases'
+
+				credentials {
+					username property('publish.lazurite.alias')
+					password property('publish.lazurite.secret')
+				}
 			}
 		}
-	}
 
-	publications {
-		dropz MavenPublication, {
-			from components.java
+		publications {
+			"$name"(MavenPublication) {
+				artifactId = archivesBaseName
+				from components.java
+			}
 		}
 	}
 }
