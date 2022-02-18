@@ -56,7 +56,7 @@ public abstract class PlayerMixin {
         final var linearVelocity = Convert.toBullet(lookDirection.scale(2.0));
 
         if (player.isShiftKeyDown()) {
-            linearVelocity.multLocal(6.0f).multLocal(Config.getInstance().yeetMultiplier);
+            linearVelocity.multLocal(8.0f).multLocal(Config.getInstance().yeetMultiplier);
         }
 
         body.setLinearVelocity(linearVelocity);

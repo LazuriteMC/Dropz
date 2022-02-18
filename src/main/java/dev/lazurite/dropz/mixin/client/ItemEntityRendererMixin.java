@@ -45,7 +45,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
         poseStack.pushPose();
         poseStack.mulPose(rotation);
-        poseStack.translate(0.0, -translation.y(), 0.0);
+        poseStack.translate(-translation.x(), -translation.y(), -translation.z());
 
         if (itemStack.getItem() instanceof BlockItem) {
             if (box != null) {

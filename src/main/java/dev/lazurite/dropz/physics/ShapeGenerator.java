@@ -18,7 +18,7 @@ public class ShapeGenerator {
             return getRoughPatternShape(itemEntity);
         }
 
-        return Convert.toBullet(new AABB(-0.2, -0.2, -0.025, 0.2, 0.2, 0.025));
+        return Convert.toBullet(new AABB(-0.2, -0.2, -0.0125, 0.2, 0.2, 0.0125));
     }
 
     public static BoundingBox getRoughPatternShape(ItemEntity itemEntity) {
@@ -43,21 +43,22 @@ public class ShapeGenerator {
 
             // Find min and max points in the pattern
             for (var point : points) {
-                if (point.x <= min.x && point.y <= min.y && point.z <= min.z) {
-                    min.set(point);
-                }
-
-                if (point.x >= max.x && point.y >= max.y && point.z >= max.z) {
-                    max.set(point);
-                }
+                if (point.x <= min.x) min.x = point.x;
+                if (point.y <= min.y) min.y = point.y;
+                if (point.z <= min.z) min.z = point.z;
+                if (point.x >= max.x) max.x = point.x;
+                if (point.y >= max.y) max.y = point.y;
+                if (point.z >= max.z) max.z = point.z;
             }
 
             final var boundingBox = Convert.toBullet(new AABB(
                     VectorHelper.toVec3(Convert.toMinecraft(min)),
                     VectorHelper.toVec3(Convert.toMinecraft(max))));
+
             boundingBox.setXExtent(0.9f * boundingBox.getXExtent());
             boundingBox.setYExtent(0.9f * boundingBox.getYExtent());
             boundingBox.setZExtent(0.9f * boundingBox.getZExtent());
+
             return boundingBox;
         }
 
