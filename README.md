@@ -10,20 +10,8 @@ make item drops physics-based. That means that any item thrown onto the ground w
 as a physic object instead of behaving like a vanilla item.
 
 ## Features
-* Item drops are now physics based
-* Items can be "yeeted" by sneaking while dropping an item
-* Items traveling at a fast enough velocity will damage mobs and other players
-* No risk to your items saved on the ground if you choose to disable this mod
-
-<img src="https://github.com/LazuriteMC/lazuritemc.github.io/raw/master/gif/yeet.gif" width="400">
-<img src="https://github.com/LazuriteMC/lazuritemc.github.io/raw/master/gif/apple_time.gif" width="400">
-
-## Warning
-Due to the CPU intensive nature of running a physics engine alongside Minecraft, you may experience decreased
-game performance based on how many items there are on the ground around you. For instance, if you throw
-hundreds of items onto the ground, you will almost certainly experience a decrease in performance. If you find
-yourself in a situation where your world is unplayable, you can simply remove the Dropz jar from your mods
-folder to disable the mod.
+* Items dropped on the ground behave more realistically.
+* Items can be thrown, or "yeeted", by sneaking while dropping the item.
 
 ## Community
 If you need help with Dropz or just wanna find out what we're working on, join our discord [here](https://discord.gg/NNPPHN7b3P).
