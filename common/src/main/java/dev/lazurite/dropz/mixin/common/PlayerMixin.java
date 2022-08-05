@@ -21,17 +21,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(Player.class)
 public abstract class PlayerMixin {
-    @Inject(
-            method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;",
-            at = @At("RETURN"),
-            cancellable = true
-    )
+    @Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("RETURN"))
     public void drop_RETURN(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
         final var itemEntity = info.getReturnValue();
+        final var player = (Player) (Object) this;
+
         if (itemEntity == null) return;
+        if (!player.isAlive()) return; // when the player dies, don't throw items out in front
 
         final var body = ((EntityPhysicsElement) itemEntity).getRigidBody();
-        final var player = (Player) (Object) this;
         final var random = player.getRandom();
         final var lookDirection = player.getViewVector(1.0f).normalize();
 
