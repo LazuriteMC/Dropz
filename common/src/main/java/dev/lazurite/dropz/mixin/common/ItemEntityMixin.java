@@ -1,6 +1,7 @@
 package dev.lazurite.dropz.mixin.common;
 
 import com.jme3.bounding.BoundingBox;
+import com.jme3.math.Vector3f;
 import dev.lazurite.dropz.Dropz;
 import dev.lazurite.dropz.util.Config;
 import dev.lazurite.dropz.physics.ShapeGenerator;
@@ -62,6 +63,12 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
         if (!Config.getInstance().doBuoyancy) {
             this.rigidBody.setBuoyancyType(ElementRigidBody.BuoyancyType.NONE);
         }
+    }
+
+    @Inject(method = "<init>(Lnet/minecraft/world/level/Level;DDDLnet/minecraft/world/item/ItemStack;DDD)V", at = @At("RETURN"))
+    public void init_SetDeltaMovement(Level level, double d, double e, double f, ItemStack itemStack, double g, double h, double i, CallbackInfo ci) {
+        final var modifier = 1.0f;
+        this.rigidBody.setLinearVelocity(new Vector3f((float) g * 20f * modifier, (float) h * 20f * modifier, (float) i * 20f * modifier));
     }
 
     /**
