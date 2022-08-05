@@ -29,8 +29,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    modApi("dev.lazurite:rayon-fabric:$rayon_version")
-    modApi("me.zeroeightsix:fiber:$fiber_version")
+    modImplementation("dev.lazurite:rayon-fabric:$rayon_version")
+    modImplementation("me.zeroeightsix:fiber:$fiber_version")
 
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
     shadowCommon("me.zeroeightsix:fiber:$fiber_version")

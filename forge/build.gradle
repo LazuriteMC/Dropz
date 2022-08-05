@@ -21,7 +21,7 @@ dependencies {
     forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    modApi("dev.lazurite:rayon-forge:$rayon_version")
+    modImplementation("dev.lazurite:rayon-forge:$rayon_version")
     common("me.zeroeightsix:fiber:$fiber_version")
 
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
