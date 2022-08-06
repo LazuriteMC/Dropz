@@ -23,7 +23,9 @@ public class Dropz {
 			final var space = element1.getRigidBody().getSpace();
 
 			if (space.isServer()) {
-				((ItemEntityAccess) item1).invokeTryToMerge(item2);
+				space.getWorkerThread().getParentExecutor().execute(() -> {
+					((ItemEntityAccess) item1).invokeTryToMerge(item2);
+				});
 			}
 		}
 	}
