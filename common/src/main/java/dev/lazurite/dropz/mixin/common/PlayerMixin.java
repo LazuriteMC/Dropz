@@ -1,7 +1,6 @@
 package dev.lazurite.dropz.mixin.common;
 
 import com.jme3.math.Vector3f;
-import com.mojang.math.Quaternion;
 import dev.lazurite.dropz.util.Config;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
@@ -9,6 +8,7 @@ import dev.lazurite.toolbox.api.math.QuaternionHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -37,7 +37,7 @@ public abstract class PlayerMixin {
         itemEntity.absMoveTo(position.x(), position.y(), position.z());
 
         // Set up the rotation
-        final var rotation = new Quaternion(Quaternion.ONE);
+        final var rotation = new Quaternionf(0, 0, 0, 1);
         QuaternionHelper.rotateX(rotation, random.nextInt(180));
         QuaternionHelper.rotateY(rotation, random.nextInt(180));
         QuaternionHelper.rotateZ(rotation, random.nextInt(180));
