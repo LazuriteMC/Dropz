@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,7 +42,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         final var rotation = Convert.toMinecraft(element.getPhysicsRotation(new com.jme3.math.Quaternion(), g));
         final var box = ((ItemStorage) element).getBox();
         final var bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.level, null, i);
-        final var translation = bakedModel.getTransforms().getTransform(ItemTransforms.TransformType.GROUND).translation;
+        final var translation = bakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND).translation;
 
         poseStack.pushPose();
         poseStack.mulPose(rotation);
@@ -53,7 +54,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
             }
         }
 
-        this.itemRenderer.render(itemStack, ItemTransforms.TransformType.GROUND, false, poseStack, multiBufferSource, i, OverlayTexture.NO_OVERLAY, bakedModel);
+        this.itemRenderer.render(itemStack, ItemDisplayContext.GROUND, false, poseStack, multiBufferSource, i, OverlayTexture.NO_OVERLAY, bakedModel);
         poseStack.popPose();
         ci.cancel();
     }

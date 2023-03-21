@@ -22,7 +22,6 @@ subprojects {
 	repositories {
 		maven { url 'https://lazurite.dev/releases' }
 		maven { url 'https://maven.modmuss50.me' }
-		mavenLocal()
 	}
 
 	dependencies {

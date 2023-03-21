@@ -13,9 +13,9 @@
   "mixins": [ "dropz.mixins.json" ],
 
   "depends": {
-    "minecraft": ">=1.19.0",
+    "minecraft": "1.19.4",
     "fabricloader": "*",
-    "rayon": ">=1.6.0"
+    "rayon": ">=1.6.7"
   },
 
   "name": "Dropz",
