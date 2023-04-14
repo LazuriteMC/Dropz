@@ -4,7 +4,8 @@
   "version": "$version",
 
   "entrypoints": {
-    "main": [ "dev.lazurite.dropz.fabric.DropzFabric" ]
+    "main": [ "dev.lazurite.dropz.fabric.DropzFabric" ],
+    "client": [ "dev.lazurite.dropz.fabric.DropzFabric" ]
   },
 
   "license": "MIT",

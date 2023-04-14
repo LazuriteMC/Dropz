@@ -1,6 +1,7 @@
 package dev.lazurite.dropz.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.lazurite.dropz.util.Config;
 import dev.lazurite.dropz.util.ItemStorage;
 import dev.lazurite.rayon.api.EntityPhysicsElement;
 import dev.lazurite.rayon.impl.bullet.math.Convert;
@@ -32,8 +33,10 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         super(context);
     }
 
-    @Inject(at = @At("HEAD"), method = "render(Lnet/minecraft/world/entity/item/ItemEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", cancellable = true)
-    public void render_HEAD(ItemEntity itemEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+    @Inject(method = "render(Lnet/minecraft/world/entity/item/ItemEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"), cancellable = true)
+    public void render$HEAD(ItemEntity itemEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+        if (!Config.dropzEnabled) return;
+
         var itemStack = itemEntity.getItem();
         this.shadowRadius = 0.0f;
 

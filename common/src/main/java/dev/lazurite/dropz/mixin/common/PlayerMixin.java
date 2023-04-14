@@ -23,21 +23,23 @@ public class PlayerMixin {
 
     @Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("RETURN"))
     public void drop$RETURN(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
-        final var itemEntity = info.getReturnValue();
-        final var player = (Player) (Object) this;
+        if (!Config.dropzEnabled) return;
+
+        var itemEntity = info.getReturnValue();
+        var player = (Player) (Object) this;
 
         if (itemEntity == null) return;
         if (!player.isAlive()) return; // when the player dies, don't throw items out in front
 
-        final var body = ((EntityPhysicsElement) itemEntity).getRigidBody();
-        final var random = player.getRandom();
-        final var lookDirection = player.getViewVector(1.0f).normalize();
+        var body = ((EntityPhysicsElement) itemEntity).getRigidBody();
+        var random = player.getRandom();
+        var lookDirection = player.getViewVector(1.0f).normalize();
 
-        final var position = itemEntity.position().add(lookDirection.scale(0.05)).add(0, itemEntity.getEyeHeight(), 0);
+        var position = itemEntity.position().add(lookDirection.scale(0.05)).add(0, itemEntity.getEyeHeight(), 0);
         itemEntity.absMoveTo(position.x(), position.y(), position.z());
 
         // Set up the rotation
-        final var rotation = new Quaternionf(0, 0, 0, 1);
+        var rotation = new Quaternionf(0, 0, 0, 1);
         QuaternionHelper.rotateX(rotation, random.nextInt(180));
         QuaternionHelper.rotateY(rotation, random.nextInt(180));
         QuaternionHelper.rotateZ(rotation, random.nextInt(180));
@@ -51,7 +53,7 @@ public class PlayerMixin {
         ));
 
         // Set up the linear velocity
-        final var linearVelocity = Convert.toBullet(lookDirection.scale(2.0));
+        var linearVelocity = Convert.toBullet(lookDirection.scale(2.0));
 
         if (player.isShiftKeyDown()) {
             linearVelocity.multLocal(8.0f).multLocal(Config.yeetMultiplier);

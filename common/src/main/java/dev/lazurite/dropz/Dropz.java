@@ -18,7 +18,7 @@ public class Dropz {
 		ElementCollisionEvents.ELEMENT_COLLISION.register(Dropz::onCollision);
 	}
 
-	public static void onCollision(PhysicsElement element1, PhysicsElement element2, float impulse) {
+	private static void onCollision(PhysicsElement element1, PhysicsElement element2, float impulse) {
 		if (Config.doItemCombination && element1 instanceof ItemEntity item1 && element2 instanceof ItemEntity item2) {
 			var space = element1.getRigidBody().getSpace();
 
@@ -29,4 +29,5 @@ public class Dropz {
 			}
 		}
 	}
+
 }
