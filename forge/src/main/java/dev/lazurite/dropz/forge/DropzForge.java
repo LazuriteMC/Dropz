@@ -5,7 +5,9 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod(Dropz.MODID)
 public class DropzForge {
+
     public DropzForge() {
         Dropz.initialize();
     }
+
 }

@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[39,)"
+loaderVersion = "[41,)"
 license = "MIT"
 
 [[mods]]
@@ -7,19 +7,19 @@ modId = "dropz"
 version = "${version}"
 displayName = "Dropz"
 authors = "Lazurite Team"
-description = "Dynamic item drops in Minecraft."
+description = "Item physics in Minecraft."
 logoFile = "icon.png"
 
-[[dependencies.rayon]]
+[[dependencies.dropz]]
 modId = "forge"
 mandatory = true
-versionRange = "[39,)"
+versionRange = "[41,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.rayon]]
+[[dependencies.dropz]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18,)"
+versionRange = "[1.19,)"
 ordering = "NONE"
 side = "BOTH"

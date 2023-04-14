@@ -1,64 +1,62 @@
 package dev.lazurite.dropz.util;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dev.architectury.injectables.annotations.ExpectPlatform;
-import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.AnnotatedSettings;
-import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Setting;
-import io.github.fablabsmc.fablabs.api.fiber.v1.annotation.Settings;
-import io.github.fablabsmc.fablabs.api.fiber.v1.exception.FiberException;
-import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.FiberSerialization;
-import io.github.fablabsmc.fablabs.api.fiber.v1.serialization.JanksonValueSerializer;
-import io.github.fablabsmc.fablabs.api.fiber.v1.tree.ConfigTree;
+import dev.lazurite.dropz.Dropz;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@Settings(onlyAnnotated = true)
 public final class Config {
-    private static final Config instance = new Config();
 
-    @Setting public float yeetMultiplier;
-    @Setting public boolean doItemCombination;
-    @Setting public boolean doBuoyancy;
-
-    private Config() {
-        this.yeetMultiplier = 1.0f;
-        this.doItemCombination = true;
-        this.doBuoyancy = true;
+    static {
+        read();
     }
 
-    public static Config getInstance() {
-        return instance;
-    }
+    public static boolean dropzEnabled = true;
+    public static float yeetMultiplier = 1.0f;
+    public static boolean doItemCombination = true;
+    public static boolean doBuoyancy = true;
 
     @ExpectPlatform
     public static Path getPath() {
         throw new AssertionError();
     }
 
-    public void load() {
-        final var path = getPath();
+    public static void write() {
+        var path = getPath();
+        var config = new JsonObject();
 
-        if (Files.exists(path)) {
-            try {
-                FiberSerialization.deserialize(
-                        ConfigTree.builder().applyFromPojo(instance, AnnotatedSettings.builder().build()).build(),
-                        Files.newInputStream(path),
-                        new JanksonValueSerializer(false)
-                );
-            } catch (IOException | FiberException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                FiberSerialization.serialize(
-                        ConfigTree.builder().applyFromPojo(instance, AnnotatedSettings.builder().build()).build(),
-                        Files.newOutputStream(path),
-                        new JanksonValueSerializer(false)
-                );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        config.addProperty("yeetMultiplier", yeetMultiplier);
+        config.addProperty("doItemCombination", doItemCombination);
+        config.addProperty("doBuoyancy", doBuoyancy);
+
+        try {
+            Files.writeString(path, config.toString());
+        } catch (IOException e) {
+            Dropz.LOGGER.warn("Failed to write config file at: " + path.toAbsolutePath().toString());
         }
     }
+
+    public static void read() {
+        var path = getPath();
+
+        if (!Files.exists(path)) {
+            write();
+            return;
+        }
+
+        try {
+            var config = JsonParser.parseReader(new InputStreamReader(Files.newInputStream(path))).getAsJsonObject();
+            yeetMultiplier = config.get("yeetMultiplier").getAsFloat();
+            doItemCombination = config.get("doItemCombination").getAsBoolean();
+            doBuoyancy = config.get("doBuoyancy").getAsBoolean();
+        } catch (IOException e) {
+            Dropz.LOGGER.warn("Failed to read config file at: " + path.toAbsolutePath().toString());
+        }
+    }
+
 }

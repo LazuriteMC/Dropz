@@ -9,22 +9,22 @@
 
   "license": "MIT",
   "environment": "*",
-  "icon": "assets/dropz/icon.png",
+  "icon": "icon.png",
   "mixins": [ "dropz.mixins.json" ],
 
   "depends": {
     "minecraft": "1.19.4",
-    "fabricloader": "*",
-    "rayon": ">=1.6.7"
+    "fabricloader": ">=0.14",
+    "rayon": ">=1.7.0"
   },
 
   "name": "Dropz",
-  "description": "Dynamic item drops in Minecraft.",
+  "description": "Item physics in Minecraft.",
   "authors": [ "The Lazurite Team" ],
   "contact": {
     "homepage": "https://lazurite.dev",
-    "sources": "https://github.com/lazuritemc/dropz",
-    "issues": "https://github.com/lazuritemc/dropz/issues"
+    "sources": "https://github.com/LazuriteMC/Dropz",
+    "issues": "https://github.com/LazuriteMC/Dropz/issues"
   },
 
   "custom": {

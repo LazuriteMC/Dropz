@@ -1,6 +1,7 @@
 plugins {
 	id 'architectury-plugin' version "$architectury_plugin_version"
 	id 'dev.architectury.loom' version "$loom_version" apply false
+	id 'com.github.johnrengelman.shadow' version "$shadow_version"
 	id 'java'
 }
 
@@ -11,6 +12,7 @@ architectury {
 subprojects {
 	apply plugin: 'dev.architectury.loom'
 	apply plugin: 'architectury-plugin'
+	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'maven-publish'
 
 	version mod_version

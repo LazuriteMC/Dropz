@@ -15,14 +15,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
- * This mixin allows the player to throw an item
- * <b><i>harder</i></b> whilst sneaking. Hence, they can
- * <b><i>yeet</i></b> the newly created {@link ItemEntity}.
+ * This mixin allows the player to throw an item <b><i>harder</i></b> whilst sneaking.
+ * Hence, they can <b><i>yeet</i></b> the newly created {@link ItemEntity}.
  */
 @Mixin(Player.class)
-public abstract class PlayerMixin {
+public class PlayerMixin {
+
     @Inject(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("RETURN"))
-    public void drop_RETURN(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
+    public void drop$RETURN(ItemStack stack, boolean throwRandomly, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
         final var itemEntity = info.getReturnValue();
         final var player = (Player) (Object) this;
 
@@ -54,9 +54,10 @@ public abstract class PlayerMixin {
         final var linearVelocity = Convert.toBullet(lookDirection.scale(2.0));
 
         if (player.isShiftKeyDown()) {
-            linearVelocity.multLocal(8.0f).multLocal(Config.getInstance().yeetMultiplier);
+            linearVelocity.multLocal(8.0f).multLocal(Config.yeetMultiplier);
         }
 
         body.setLinearVelocity(linearVelocity);
     }
+
 }

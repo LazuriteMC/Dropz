@@ -3,5 +3,4 @@ architectury.common(forge_enabled.toBoolean())
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$fabric_loader_version"
     modImplementation "dev.lazurite:rayon-common:$rayon_version"
-    modImplementation "me.zeroeightsix:fiber:$fiber_version", { transitive false }
 }

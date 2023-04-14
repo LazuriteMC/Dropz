@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.AABB;
 
 public class ShapeGenerator {
+
     public static BoundingBox create(ItemEntity itemEntity) {
         if (itemEntity.getItem().getItem() instanceof BlockItem) {
             return getRoughPatternShape(itemEntity);
@@ -64,4 +65,5 @@ public class ShapeGenerator {
 
         return null;
     }
+
 }

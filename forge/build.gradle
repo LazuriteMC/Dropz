@@ -1,7 +1,3 @@
-plugins {
-    id 'com.github.johnrengelman.shadow' version "$shadow_version"
-}
-
 loom.forge.mixinConfig 'dropz.mixins.json'
 
 architectury {
@@ -19,13 +15,9 @@ configurations {
 
 dependencies {
     forge "net.minecraftforge:forge:$minecraft_version-$forge_version"
-
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    modImplementation("dev.lazurite:rayon-forge:$rayon_version")
-    common("me.zeroeightsix:fiber:$fiber_version")
-
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive false }
-    shadowCommon("me.zeroeightsix:fiber:$fiber_version")
+    modImplementation("dev.lazurite:rayon-forge:$rayon_version")
 }
 
 tasks.withType(ProcessResources) {
