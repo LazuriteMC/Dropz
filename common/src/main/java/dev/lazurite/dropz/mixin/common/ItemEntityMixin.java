@@ -51,6 +51,11 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
         return this.box;
     }
 
+    @Override
+    public boolean skipVanillaEntityCollisions() {
+        return true;
+    }
+
     @Override @Nullable
     public EntityRigidBody getRigidBody() {
         return Config.dropzEnabled ? this.rigidBody : null;
