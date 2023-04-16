@@ -15,7 +15,7 @@ subprojects {
 	apply plugin: 'com.github.johnrengelman.shadow'
 	apply plugin: 'maven-publish'
 
-	version mod_version
+	version "${mod_version}+${minecraft_version}"
 	group maven_group
 
 	archivesBaseName = rootProject.archivesBaseName + '-' + name
