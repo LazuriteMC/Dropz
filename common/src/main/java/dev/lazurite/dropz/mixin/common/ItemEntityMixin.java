@@ -94,7 +94,7 @@ public abstract class ItemEntityMixin extends Entity implements EntityPhysicsEle
 
         var thisEntity = (ItemEntity) (Object) this;
 
-        if (!thisEntity.level.isClientSide && getItem().getItem() instanceof BlockItem) {
+        if (!thisEntity.level().isClientSide && getItem().getItem() instanceof BlockItem) {
             var pattern = Transporter.getPatternBuffer().getItem(Item.getId(getItem().getItem()));
 
             // Pattern has changed, create a new shape

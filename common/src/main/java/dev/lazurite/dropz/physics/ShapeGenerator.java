@@ -25,7 +25,7 @@ public class ShapeGenerator {
     }
 
     public static BoundingBox getRoughPatternShape(ItemEntity itemEntity) {
-        final var level = itemEntity.getLevel();
+        final var level = itemEntity.level();
         final var itemStack = itemEntity.getItem();
         final Pattern pattern;
 

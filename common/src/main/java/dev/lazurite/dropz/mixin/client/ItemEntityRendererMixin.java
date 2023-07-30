@@ -43,7 +43,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         var element = (EntityPhysicsElement) itemEntity;
         var rotation = Convert.toMinecraft(element.getPhysicsRotation(new com.jme3.math.Quaternion(), g));
         var box = ((ItemStorage) element).getBox();
-        var bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.level, null, i);
+        var bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.level(), null, i);
         var translation = bakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND).translation;
 
         poseStack.pushPose();
